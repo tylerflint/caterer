@@ -8,9 +8,12 @@ Gem::Specification.new do |gem|
   gem.version       = Caterer::VERSION
   gem.authors       = ["Tyler Flint"]
   gem.email         = ["tylerflint@gmail.com"]
-  gem.description   = %q{TODO: Write a gem description}
-  gem.summary       = %q{TODO: Write a gem summary}
+  gem.description   = %q{Caterer is a server configuration tool that caters to your servers with a push model, with support for chef recipes}
+  gem.summary       = %q{A server configuration tool that caters to your servers with a push model, with support for chef recipes}
   gem.homepage      = ""
+
+  gem.add_dependency "log4r"
+  gem.add_dependency 'activesupport'
 
   gem.files         = `git ls-files`.split($/)
   gem.executables   = gem.files.grep(%r{^bin/}).map{ |f| File.basename(f) }

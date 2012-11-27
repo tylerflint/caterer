@@ -1,0 +1,20 @@
+#!/usr/bin/env ruby
+
+# TODO: find a way to conditionally trigger this if dev only
+lib = File.expand_path('../../lib', __FILE__)
+$LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
+
+require 'log4r'
+require 'caterer'
+
+$stdout.sync = true
+$stderr.sync = true
+
+logger = Log4r::Logger.new "caterer::bin::cater"
+logger.info "`cater` invoked: #{ARGV.inspect}"
+
+env = Caterer::Environment.new
+
+env.load!
+
+exit env.cli(ARGV)
