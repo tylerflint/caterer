@@ -13,11 +13,11 @@ module Caterer
 
       opts[:cwd] ||= ENV["CATERER_CWD"] if ENV.has_key?("CATERER_CWD")
       opts[:cwd] ||= Dir.pwd
-      opts[:cwd]   = Pathname.new(opts[:cwd])
+      opts[:cwd]  = Pathname.new(opts[:cwd])
 
       opts[:caterfile_name] ||= []
-      opts[:caterfile_name]   = [opts[:caterfile_name]] if !opts[:vagrantfile_name].is_a?(Array)
-      opts[:caterfile_name]  += ["Caterfile"]
+      opts[:caterfile_name] = [opts[:caterfile_name]] if !opts[:vagrantfile_name].is_a?(Array)
+      opts[:caterfile_name] += ["Caterfile"]
 
       @cwd            = opts[:cwd]
       @caterfile_name = opts[:caterfile_name]
@@ -41,8 +41,8 @@ module Caterer
       end
     end
 
-    def cli(args)
-      0
+    def cli(*args)
+      Cli.new(args.flatten, self).execute
     end
 
   end
