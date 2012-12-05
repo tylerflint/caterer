@@ -1,1 +1,0 @@
-Caterer.commands.register(:test) { Caterer::Command::Test }
