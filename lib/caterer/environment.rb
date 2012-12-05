@@ -3,12 +3,13 @@ require 'pathname'
 module Caterer
   class Environment
     
-    attr_reader :cwd, :caterfile_name
+    attr_reader :cwd, :caterfile_name, :ui
 
     def initialize(opts={})
       opts = {
         :cwd => nil,
-        :caterfile_name => nil
+        :caterfile_name => nil,
+        :ui_class => nil
       }.merge(opts)
 
       opts[:cwd] ||= ENV["CATERER_CWD"] if ENV.has_key?("CATERER_CWD")
@@ -21,6 +22,9 @@ module Caterer
 
       @cwd            = opts[:cwd]
       @caterfile_name = opts[:caterfile_name]
+
+      ui_class = opts[:ui_class] || Vli::UI::Silent
+      @ui      = ui_class.new("cater")
 
     end
 

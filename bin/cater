@@ -6,6 +6,7 @@ $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 
 require 'log4r'
 require 'caterer'
+require 'vli'
 
 $stdout.sync = true
 $stderr.sync = true
@@ -13,7 +14,21 @@ $stderr.sync = true
 logger = Log4r::Logger.new "caterer::bin::cater"
 logger.info "`cater` invoked: #{ARGV.inspect}"
 
-env = Caterer::Environment.new
+opts = {}
+
+# Disable color if the proper argument was passed or if we're
+# on Windows since the default Windows terminal doesn't support
+# colors.
+if ARGV.include?("--no-color") || !$stdout.tty? || !Vli::Util::Platform.terminal_supports_colors?
+  # Delete the argument from the list so that it doesn't cause any
+  # invalid arguments down the road.
+  ARGV.delete("--no-color")
+  opts[:ui_class] = Vli::UI::Basic
+else
+  opts[:ui_class] = Vli::UI::Colored
+end
+
+env = Caterer::Environment.new(opts)
 
 env.load!
 

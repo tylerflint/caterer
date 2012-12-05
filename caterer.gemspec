@@ -12,8 +12,9 @@ Gem::Specification.new do |gem|
   gem.summary       = %q{A server configuration tool that caters to your servers with a push model, with support for chef recipes}
   gem.homepage      = ""
 
-  gem.add_dependency "log4r"
+  gem.add_dependency 'log4r'
   gem.add_dependency 'activesupport'
+  gem.add_dependency 'vli'
 
   gem.files         = `git ls-files`.split($/)
   gem.executables   = gem.files.grep(%r{^bin/}).map{ |f| File.basename(f) }

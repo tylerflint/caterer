@@ -1,6 +1,6 @@
 module Caterer
   module Command
-    class Test < Base
+    class Test < Vli::Command::Base
       
       def execute
         puts "testy testy!"

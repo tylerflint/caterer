@@ -1,3 +1,4 @@
+require 'vli'
 require 'caterer/version'
 require 'caterer/logger'
 
@@ -6,12 +7,11 @@ module Caterer
   autoload :Command,      'caterer/command'
   autoload :Config,       'caterer/config'
   autoload :Environment,  'caterer/environment'
-  autoload :Registry,     'caterer/registry'
   
   extend self
 
   def commands
-    @commands ||= Registry.new
+    @commands ||= Vli::Registry.new
   end
 
   def config

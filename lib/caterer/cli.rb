@@ -5,7 +5,7 @@
 require 'optparse'
 
 module Caterer
-  class Cli < Command::Base
+  class Cli < Vli::Command::Base
     def initialize(argv, env)
       super
 
@@ -19,7 +19,7 @@ module Caterer
       if @main_args.include?("-v") || @main_args.include?("--version")
         # Version short-circuits the whole thing. Just print
         # the version and exit.
-        puts "Caterer version #{Caterer::VERSION}"
+        @env.ui.info "Caterer version #{Caterer::VERSION}", :prefix => false
 
         return 0
       elsif @main_args.include?("-h") || @main_args.include?("--help")
@@ -64,7 +64,7 @@ module Caterer
         opts.separator "For help on any individual command run `cater COMMAND -h`"
       end
 
-      puts opts.help
+      @env.ui.info opts.help, :prefix => false
     end
 
   end
