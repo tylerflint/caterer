@@ -22,4 +22,20 @@ Caterer.configure do |config|
 
   end
 
+  # for later...
+  
+  # config.cluster :default do |cluster|
+
+  #   cluster.role :default
+
+  #   cluster.node :baker1 do |node|
+  #     node.role :default
+  #     node.ip "192.168.1.100"
+  #     node.user 'root'
+  #     node.password 'root'
+  #     node.json = { "active" => false }
+  #   end
+
+  # end
+
 end

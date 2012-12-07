@@ -3,10 +3,13 @@ require 'caterer/version'
 require 'caterer/logger'
 
 module Caterer
-  autoload :Cli,          'caterer/cli'
-  autoload :Command,      'caterer/command'
-  autoload :Config,       'caterer/config'
-  autoload :Environment,  'caterer/environment'
+  autoload :Cli,            'caterer/cli'
+  autoload :Command,        'caterer/command'
+  autoload :Communication,  'caterer/communication'
+  autoload :Config,         'caterer/config'
+  autoload :Environment,    'caterer/environment'
+  autoload :Server,         'caterer/server'
+  autoload :Util,           'caterer/util'
   
   extend self
 

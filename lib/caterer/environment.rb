@@ -28,6 +28,19 @@ module Caterer
 
     end
 
+    def action_runner
+      @action_runner ||= Vli::Action::Runner.new(action_registry) do
+        {
+          :action_runner  => action_runner,
+          :ui             => @ui
+        }
+      end
+    end
+
+    def action_registry
+      Caterer.actions
+    end
+
     def load!
       load_default_config
       load_custom_config
