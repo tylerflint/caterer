@@ -1,3 +1,5 @@
+require 'etc'
+
 module Caterer
   class Server
     
@@ -29,17 +31,18 @@ module Caterer
       run_action(:up, opts)
     end
 
-    def channel
-      @channel ||= Communication::SSH.new(self)
+    def ssh
+      @ssh ||= Communication::SSH.new(self)
+    end
+
+    def rsync
+      @rsync ||= Communication::Rsync.new(self)
     end
 
     def ssh_opts
       {
-        :host => host,
         :port => port,
-        :username => username,
-        :password => password,
-        :max_tries => 10
+        :password => password
       }
     end
 
@@ -52,19 +55,19 @@ module Caterer
     end
 
     def username
-      
+      @user || Etc.getlogin
     end
 
     def password
-      
+      @pass
     end
 
     def host
-      
+      @host
     end
 
     def port
-      
+      @port || 22
     end
 
     def run_action(name, options=nil)
