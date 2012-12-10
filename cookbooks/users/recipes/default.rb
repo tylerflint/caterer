@@ -1,5 +1,8 @@
 
-package 'build-essential'
+package "build-essential" do
+  action :nothing
+end.run_action(:install)
+
 package 'whois'
 chef_gem 'ruby-shadow'
 
@@ -7,6 +10,8 @@ chef_gem 'ruby-shadow'
   user u do
     supports :manage_home => true
     home "/home/#{u}"
+    gid "admin"
+    shell "/bin/bash"
     password `echo #{pass} | mkpasswd -s -m sha-512`.chomp
   end
 end

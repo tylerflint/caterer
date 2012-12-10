@@ -1,5 +1,6 @@
 require 'timeout'
 require 'net/ssh'
+require 'net/scp'
 require 'log4r'
 
 module Caterer
@@ -41,18 +42,19 @@ module Caterer
         execute(command, true, &block)
       end
 
-      def upload(from, to)
+      def upload(from, to, recursive=false)
         @logger.debug("Uploading: #{from} to #{to}")
 
         # Do an SCP-based upload...
         connect do |connection|
-          # Open file read only to fix issue #1036
+          opts = {}
+          opts[:recursive] = true if File.directory?(from)
           scp = Net::SCP.new(connection)
-          scp.upload!(File.open(from, "r"), to)
+          scp.upload!(from, to, opts)
         end
       rescue Net::SCP::Error => e
         # If we get the exit code of 127, then this means SCP is unavailable.
-        raise Errors::SCPUnavailable if e.message =~ /\(127\)/
+        raise "scp unavailable" if e.message =~ /\(127\)/
 
           # Otherwise, just raise the error up
           raise
@@ -104,7 +106,7 @@ module Caterer
         # This is hacky but actually helps with some issues where
         # Net::SSH is simply not robust enough to handle... see
         # issue #391, #455, etc.
-        sleep 4
+        # sleep 4
 
         # Yield the connection that is ready to be used and
         # return the value of the block

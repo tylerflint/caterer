@@ -49,7 +49,7 @@ module Caterer
     def ui
       @ui ||= begin
         ui = @env.ui.dup
-        # ui.resource = @name
+        ui.resource = host
         ui
       end
     end

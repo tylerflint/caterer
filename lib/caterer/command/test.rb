@@ -9,10 +9,12 @@ module Caterer
           pass: 'password'
         }
         server = Server.new(@env, nil, opts)
-        channel = server.ssh
-        channel.execute("whoami") do |type, data|
-          @env.ui.info data
-        end
+        ssh = server.ssh
+        # channel.execute("whoami") do |type, data|
+        #   @env.ui.info data
+        # end
+        ssh.upload("#{Dir.pwd}/cookbooks", '/tmp')
+        # @env.ui.info Dir.pwd
         0
       end
 
