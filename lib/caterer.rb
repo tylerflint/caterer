@@ -3,6 +3,7 @@ require 'caterer/version'
 require 'caterer/logger'
 
 module Caterer
+  autoload :Action,         'caterer/action'
   autoload :Cli,            'caterer/cli'
   autoload :Command,        'caterer/command'
   autoload :Communication,  'caterer/communication'
@@ -12,6 +13,10 @@ module Caterer
   autoload :Util,           'caterer/util'
   
   extend self
+
+  def actions
+    @actions ||= Vli::Registry.new
+  end
 
   def commands
     @commands ||= Vli::Registry.new
@@ -35,3 +40,9 @@ Caterer.commands.register(:up)        { Caterer::Command::Up }
 Caterer.commands.register(:reboot)    { Caterer::Command::Reboot }
 
 # actions
+Caterer.actions.register(:bootstrap) do
+  Vli::Action::Builder.new do
+    use Caterer::Action::Server::Install
+    use Caterer::Action::Server::Bootstrap
+  end
+end

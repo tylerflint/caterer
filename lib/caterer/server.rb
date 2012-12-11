@@ -19,6 +19,31 @@ module Caterer
       run_action(:bootstrap, opts)
     end
 
+    def bootstrap!(script=nil)
+      if script
+        if File.exists? script
+          # upload
+          ui.info "uploading bootstrap"
+          ssh.upload script, "/tmp"
+          # set permissions
+          ui.info "applying permissions"
+          ssh.sudo "chown root:root /tmp/bootstrap.sh"
+          ssh.sudo "chmod 777 /tmp/bootstrap.sh"
+          # run
+          ui.info "running bootstrap"
+          ssh.sudo "/tmp/bootstrap.sh" do |type, data|
+            if type == :stderr
+              ui.error data.chomp
+            else
+              ui.success data.chomp
+            end
+          end
+        else
+          ui.error "script does not exist!"
+        end
+      end
+    end
+
     def provision(opts=nil)
       run_action(:provision, opts)
     end

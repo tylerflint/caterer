@@ -1,29 +1,25 @@
 module Caterer
   module Command
-    class Bootstrap < Vli::Command::Base
+    class Bootstrap < Base
       
       def execute
         options = {}
         opts = OptionParser.new do |opts|
           opts.banner = "Usage: cater bootstrap HOST [options]"
           opts.separator ""
-          opts.on("-a USER", "--as USER", 'assumes current username') do |a|
-            options[:user] = a
+          opts.on("-s SCRIPT", "--script SCRIPT", 'optional bootstrap script') do |s|
+            options[:script] = s
           end
-          opts.on('-x PASSWORD', '--password PASSWORD', 'assumes key') do |p|
-            options[:password] = p
-          end
-          opts.on('-p PORT', '--port PORT', 'assumes 22') do |p|
-            options[:port] = p
-          end
-          opts.separator ""
         end
 
         # Parse the options
-        argv = parse_options(opts)
-        return if !argv
+        argv = parse_options(opts, options, true)
+        return if not argv
 
-        @env.ui.info options
+        with_target_servers(argv, options) do |server|
+          server.bootstrap(:script => options[:script])
+        end
+
         0
       end
 

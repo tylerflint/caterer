@@ -1,5 +1,7 @@
-module Caterer::Config
-  module Provision
-    autoload :ChefSolo, 'caterer/config/provision/chef_solo'
+module Caterer
+  module Config
+    module Provision
+      autoload :ChefSolo, 'caterer/config/provision/chef_solo'
+    end
   end
 end

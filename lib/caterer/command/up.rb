@@ -1,29 +1,19 @@
 module Caterer
   module Command
-    class Up < Vli::Command::Base
+    class Up < Base
       
       def execute
         options = {}
         opts = OptionParser.new do |opts|
-          opts.banner = "Usage: cater up HOST [options]"
-          opts.separator ""
-          opts.on("-a USER", "--as USER", 'assumes current username') do |a|
-            options[:user] = a
-          end
-          opts.on('-x PASSWORD', '--password PASSWORD', 'assumes key') do |p|
-            options[:password] = p
-          end
-          opts.on('-p PORT', '--port PORT', 'assumes 22') do |p|
-            options[:port] = p
-          end
-          opts.separator ""
+          opts.banner = "Usage: cater provision HOST [options]"
         end
 
         # Parse the options
-        argv = parse_options(opts)
-        return if !argv
+        argv = parse_options(opts, options, true)
+        return if not argv
 
         @env.ui.info options
+        @env.ui.info argv
         0
       end
 

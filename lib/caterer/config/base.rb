@@ -1,17 +1,19 @@
-module Caterer::Config
+module Caterer
+  module Config
+    class Base
 
-  class Base
-    attr_accessor :roles
+      attr_accessor :roles
 
-    def initialize
-      @roles = []  
-    end
+      def initialize
+        @roles = []  
+      end
 
-    def role(name)
-      role = Caterer::Config::Role.new(name)
-      yield role if block_given?
-      @roles << role
+      def role(name)
+        role = Caterer::Config::Role.new(name)
+        yield role if block_given?
+        @roles << role
+      end
+      
     end
   end
-
 end

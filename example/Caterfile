@@ -22,20 +22,59 @@ Caterer.configure do |config|
 
   end
 
-  # for later...
-  
-  # config.cluster :default do |cluster|
+  config.cluster :default do |cluster|
 
-  #   cluster.role :default
+    cluster.role :default
 
-  #   cluster.node :baker1 do |node|
-  #     node.role :default
-  #     node.ip "192.168.1.100"
-  #     node.user 'root'
-  #     node.password 'root'
-  #     node.json = { "active" => false }
-  #   end
+    cluster.node :baker1 do |node|
+      node.role :default
+      node.ip "192.168.1.100"
+      node.user 'root'
+      node.password 'root'
+      node.json = { "active" => false }
+    end
 
-  # end
+  end
 
 end
+
+# future
+# Caterer.configure do |config|
+
+#   config.role :basic do |role|
+#     role.provision :chef_solo do |chef|
+#       chef.add_recipe 'ruby'
+#     end
+#   end
+
+#   config.role :rails do |role|
+#     role.provision :chef_solo do |chef|
+#       chef.add_recipe 'ruby'
+#       chef.add_recipe 'mysql::server'
+#       chef.add_recipe 'mysql::client'
+#       chef.json = {
+#         "ruby" => {
+#           "gems" => ['args_parser', 'mysql2']
+#         }
+#       }
+#     end
+#   end
+
+#   config.group :oven do |group|
+
+#     group.roles = [:basic, :rails]
+
+#     group.user     = 'root'
+#     group.password = 'password'
+
+#     group.member :oven1 do |m|
+#       m.host = "192.168.1.100"
+#     end
+
+#     group.member :oven2 do |m|
+#       m.host     = "192.168.1.101"
+#       m.password = 'samIam'
+#     end
+
+#   end
+# end
