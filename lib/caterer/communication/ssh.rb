@@ -32,14 +32,14 @@ module Caterer
         return false
       end
 
-      def execute(command, sudo=false, &block)
+      def execute(command, opts={}, &block)
         connect do |connection|
-          shell_execute(connection, command, sudo, &block)
+          shell_execute(connection, command, opts, &block)
         end
       end
 
-      def sudo(command, opts=nil, &block)
-        execute(command, true, &block)
+      def sudo(command, opts={}, &block)
+        execute(command, opts.merge({:sudo => true}), &block)
       end
 
       def upload(from, to, recursive=false)
@@ -114,14 +114,18 @@ module Caterer
       end
 
       # Executes the command on an SSH connection within a login shell.
-      def shell_execute(connection, command, sudo=false)
-        @logger.info("Execute: #{command} (sudo=#{sudo.inspect})")
+      def shell_execute(connection, command, opts={})
+
+        opts[:sudo] ||= false
+        opts[:stream] ||= false
+
+        @logger.info("Execute: #{command} (opts=#{opts.inspect})")
         exit_status = nil
 
         # Determine the shell to execute. If we are using `sudo` then we
         # need to wrap the shell in a `sudo` call.
         shell = "bash -l"
-        shell = "sudo -H #{shell}" if sudo
+        shell = "sudo -H #{shell}" if opts[:sudo]
 
         # Open the channel so we can execute or command
         channel = connection.open_channel do |ch|
@@ -134,6 +138,9 @@ module Caterer
                 @logger.debug("stdout: #{data}")
                 yield :stdout, data
               end
+              if opts[:stream]
+                @server.ui.success data.chomp
+              end
             end
 
             ch2.on_extended_data do |ch3, type, data|
@@ -142,6 +149,9 @@ module Caterer
                 data = remove_ansi_escape_codes(data)
                 @logger.debug("stderr: #{data}")
                 yield :stderr, data
+              end
+              if opts[:stream]
+                @server.ui.error data.chomp
               end
             end
 

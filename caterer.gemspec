@@ -17,6 +17,7 @@ Gem::Specification.new do |gem|
   gem.add_dependency 'vli'
   gem.add_dependency 'net-ssh'
   gem.add_dependency 'net-scp'
+  gem.add_dependency 'tilt'
 
   gem.files         = `git ls-files`.split($/)
   gem.executables   = gem.files.grep(%r{^bin/}).map{ |f| File.basename(f) }
