@@ -9,6 +9,7 @@ module Caterer
   autoload :Communication,  'caterer/communication'
   autoload :Config,         'caterer/config'
   autoload :Environment,    'caterer/environment'
+  autoload :Provisioner,    'caterer/provisioner'
   autoload :Server,         'caterer/server'
   autoload :Util,           'caterer/util'
   
@@ -42,7 +43,7 @@ Caterer.commands.register(:reboot)    { Caterer::Command::Reboot }
 # actions
 Caterer.actions.register(:bootstrap) do
   Vli::Action::Builder.new do
-    use Caterer::Action::Server::Install
-    use Caterer::Action::Server::Bootstrap
+    use Caterer::Action::Provisioner::Prepare
+    use Caterer::Action::Provisioner::Bootstrap
   end
 end

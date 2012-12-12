@@ -1,6 +1,7 @@
 module Caterer
   module Action
-    autoload :Runner, 'caterer/action/runner'
-    autoload :Server, 'caterer/action/server'
+    autoload :Base,         'caterer/action/base'
+    autoload :Runner,       'caterer/action/runner'
+    autoload :Provisioner,  'caterer/action/provisioner'
   end
 end

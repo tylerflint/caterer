@@ -42,9 +42,13 @@ module Caterer
     end
 
     def load!
-      load_default_config
-      load_custom_config
+      @config ||= begin
+        load_default_config
+        load_custom_config
+        Caterer.config
+      end
     end
+    alias :config :load!
 
     def load_default_config
       # doesn't work yet

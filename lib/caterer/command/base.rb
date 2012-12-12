@@ -29,7 +29,7 @@ module Caterer
 
       def with_target_servers(argv, options={})
         argv.first.split(",").each do |host|
-          yield Server.new(@env, nil, options.merge({:host => host}))
+          yield Server.new(@env, options.merge({:host => host}))
         end
       end
 
