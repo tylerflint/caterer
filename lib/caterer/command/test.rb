@@ -1,20 +1,16 @@
 module Caterer
   module Command
-    class Test < Vli::Command::Base
+    class Test < Base
       
       def execute
-        opts = {
-          host: '33.33.33.10',
-          user: 'ernie',
-          pass: 'password'
-        }
-        server = Server.new(@env, nil, opts)
-        ssh = server.ssh
-        # channel.execute("whoami") do |type, data|
-        #   @env.ui.info data
-        # end
-        ssh.upload("#{Dir.pwd}/cookbooks", '/tmp')
-        # @env.ui.info Dir.pwd
+        options = {}
+        opts = OptionParser.new do |opts|
+          opts.banner = "Usage: cater test"
+        end
+
+        # Parse the options
+        argv = parse_options(opts, options, false)
+        puts "whatev"
         0
       end
 

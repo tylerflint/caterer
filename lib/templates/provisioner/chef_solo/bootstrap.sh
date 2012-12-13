@@ -84,5 +84,4 @@ install_curl() {
 exists curl || install_curl
 
 # install chef-solo
-curl -L https://www.opscode.com/chef/install.sh | bash
-
+exists chef-solo || curl -L https://www.opscode.com/chef/install.sh | bash

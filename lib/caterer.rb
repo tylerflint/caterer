@@ -45,5 +45,7 @@ Caterer.actions.register(:bootstrap) do
   Vli::Action::Builder.new do
     use Caterer::Action::Provisioner::Prepare
     use Caterer::Action::Provisioner::Bootstrap
+    use Caterer::Action::Provisioner::Cleanup
   end
 end
+

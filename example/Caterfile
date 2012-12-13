@@ -1,80 +1,43 @@
 Caterer.configure do |config|
 
-  config.role :default do |node|
+  config.role :basic do |role|
+    role.provision :chef_solo do |chef|
+      chef.cookbooks_path = ['cookbooks'] # default
+      chef.add_recipe 'ruby'
+    end
+  end
 
-    node.provision :chef_solo do |chef|
+  config.role :rails do |role|
+    role.provision :chef_solo do |chef|
+      chef.bootstrap_script = 'script/bootstrap'
+      chef.cookbooks_path = ['cookbooks'] # default
       chef.add_recipe 'ruby'
       chef.add_recipe 'mysql::server'
       chef.add_recipe 'mysql::client'
       chef.json = {
         "ruby" => {
           "gems" => ['args_parser', 'mysql2']
-        },
-        "mysql" => {
-          "server_root_password" => "root",
-          "bind_address" => '127.0.0.1',
-          "client" => {
-            "packages" => ["mysql-client", "libmysqlclient-dev"]
-          }
         }
       }
     end
-
   end
 
-  config.cluster :default do |cluster|
+  config.group :oven do |group|
 
-    cluster.role :default
+    group.roles    = [:basic, :rails]
+    group.user     = 'root'
+    group.password = 'password'
 
-    cluster.node :baker1 do |node|
-      node.role :default
-      node.ip "192.168.1.100"
-      node.user 'root'
-      node.password 'root'
-      node.json = { "active" => false }
+    group.member :oven1 do |m|
+      m.host = "192.168.1.100"
+    end
+    
+    group.member :oven2 do |m|
+      m.host     = "192.168.1.101"
+      m.password = 'samIam'
     end
 
   end
 
 end
 
-# future
-# Caterer.configure do |config|
-
-#   config.role :basic do |role|
-#     role.provision :chef_solo do |chef|
-#       chef.add_recipe 'ruby'
-#     end
-#   end
-
-#   config.role :rails do |role|
-#     role.provision :chef_solo do |chef|
-#       chef.add_recipe 'ruby'
-#       chef.add_recipe 'mysql::server'
-#       chef.add_recipe 'mysql::client'
-#       chef.json = {
-#         "ruby" => {
-#           "gems" => ['args_parser', 'mysql2']
-#         }
-#       }
-#     end
-#   end
-
-#   config.group :oven do |group|
-
-#     group.roles = [:basic, :rails]
-
-#     group.user     = 'root'
-#     group.password = 'password'
-
-#     group.member :oven1 do |m|
-#       m.host = "192.168.1.100"
-#     end
-
-#     group.member :oven2 do |m|
-#       m.host     = "192.168.1.101"
-#       m.password = 'samIam'
-#     end
-
-#   end
-# end

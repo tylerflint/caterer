@@ -9,19 +9,20 @@ module Caterer
       opts = {
         :cwd => nil,
         :caterfile_name => nil,
-        :ui_class => nil
+        :ui_class => nil,
+        :custom_config => nil
       }.merge(opts)
 
       opts[:cwd] ||= ENV["CATERER_CWD"] if ENV.has_key?("CATERER_CWD")
       opts[:cwd] ||= Dir.pwd
-      opts[:cwd]  = Pathname.new(opts[:cwd])
 
       opts[:caterfile_name] ||= []
-      opts[:caterfile_name] = [opts[:caterfile_name]] if !opts[:vagrantfile_name].is_a?(Array)
+      opts[:caterfile_name] = [opts[:caterfile_name]] if !opts[:caterfile_name].is_a?(Array)
       opts[:caterfile_name] += ["Caterfile"]
 
-      @cwd            = opts[:cwd]
+      @cwd            = Pathname.new(opts[:cwd])
       @caterfile_name = opts[:caterfile_name]
+      @custom_config  = opts[:custom_config]
 
       ui_class = opts[:ui_class] || Vli::UI::Silent
       @ui      = ui_class.new("cater")
@@ -51,15 +52,23 @@ module Caterer
     alias :config :load!
 
     def load_default_config
-      # doesn't work yet
-      # require 'config/default'
+      require_relative '../../config/default'
     end
 
     def load_custom_config
-      @caterfile_name.each do |config_file|
-        file = "#{@cwd}/#{config_file}"
-        load file if File.exists? file
+      if @custom_config
+        # if it's been explicitly defined, load it
+        load_config_file @custom_config
+      else
+        # lets try a few variations
+        @caterfile_name.each do |config_file|
+          load_config_file "#{@cwd}/#{config_file}"
+        end
       end
+    end
+
+    def load_config_file(file)
+      load file if File.exists? file
     end
 
     def cli(*args)

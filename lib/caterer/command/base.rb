@@ -5,6 +5,8 @@ module Caterer
       def parse_options(opts=nil, options={}, force_argv=true)
         opts ||= OptionParser.new
         opts.separator ""
+        opts.on("-c CONFIG", 'assumes Caterfile in current directory')
+        opts.separator ""
         opts.on("-u USER", "--user USER", 'assumes current username') do |u|
           options[:user] = u
         end

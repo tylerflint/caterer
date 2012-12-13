@@ -28,6 +28,15 @@ else
   opts[:ui_class] = Vli::UI::Colored
 end
 
+# strip out a custom config file and set it into the env opts
+if ARGV.include? "-c"
+  index = ARGV.index '-c'
+  value = ARGV[index + 1]
+  opts[:custom_config] = value
+  ARGV.delete('-c')
+  ARGV.delete(value)
+end
+
 env = Caterer::Environment.new(opts)
 
 env.load!

@@ -5,7 +5,8 @@ module Caterer
     class ChefSolo < Base
       
       def bootstrap(script=nil)
-        return unless script
+
+        script ||= default_bootstrap
 
         if not File.exists? script
           server.ui.error "script does not exist!"
@@ -13,21 +14,22 @@ module Caterer
         end
 
         # upload
-        server.ui.info "uploading bootstrap"
-        server.ssh.upload script, "/tmp"
+        server.ui.info "uploading bootstrap script"
+        server.ssh.upload script, "#{base_path}/bootstrap"
 
         # set permissions
         server.ui.info "applying permissions"
-        server.ssh.sudo "chown root:root /tmp/bootstrap.sh"
-        server.ssh.sudo "chmod 777 /tmp/bootstrap.sh"
+        server.ssh.sudo "chown #{server.username} #{base_path}/bootstrap"
+        server.ssh.sudo "chmod 777 #{base_path}/bootstrap"
 
         # run
-        server.ui.info "running bootstrap"
-        server.ssh.sudo "/tmp/bootstrap.sh", :stream => true
+        server.ui.info "running bootstrap script"
+        server.ssh.sudo "#{base_path}/bootstrap", :stream => true
       end
 
       def prepare
-        
+        server.ssh.sudo "mkdir -p #{base_path}"
+        server.ssh.sudo "chown #{server.username} #{base_path}"
       end
 
       def provision
@@ -35,7 +37,21 @@ module Caterer
       end
 
       def cleanup
-        
+        server.ssh.sudo "rm -rf #{base_path}"
+      end
+
+      protected
+
+      def base_path
+        "/tmp/cater-chef-solo"
+      end
+
+      def cookbooks_path
+        ""
+      end
+
+      def default_bootstrap
+        "lib/templates/provisioner/chef_solo/bootstrap.sh"
       end
 
     end
