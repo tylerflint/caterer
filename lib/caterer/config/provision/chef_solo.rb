@@ -5,13 +5,14 @@ module Caterer
       class ChefSolo
         
         attr_reader :name
-        attr_accessor :recipes, :json, :cookbooks_path, :bootstrap_script
+        attr_accessor :recipes, :json, :cookbooks_path, :data_bags_path, :bootstrap_script
 
         def initialize(name)
           @name           = name
           @recipes        = []
           @json           = {}
           @cookbooks_path = ['cookbooks']
+          @data_bags_path = []
         end
 
         def add_recipe(recipe)

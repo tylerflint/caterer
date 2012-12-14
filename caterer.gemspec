@@ -18,6 +18,8 @@ Gem::Specification.new do |gem|
   gem.add_dependency 'net-ssh'
   gem.add_dependency 'net-scp'
   gem.add_dependency 'tilt'
+  gem.add_dependency 'oj'
+  gem.add_dependency 'multi_json', '>= 1.3'
 
   gem.files         = `git ls-files`.split($/)
   gem.executables   = gem.files.grep(%r{^bin/}).map{ |f| File.basename(f) }

@@ -12,8 +12,10 @@ module Caterer
         argv = parse_options(opts, options, true)
         return if not argv
 
-        @env.ui.info options
-        @env.ui.info argv
+        with_target_servers(argv, options) do |server|
+          server.provision(role_list(options))
+        end
+
         0
       end
 

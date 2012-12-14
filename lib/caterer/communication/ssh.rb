@@ -42,13 +42,13 @@ module Caterer
         execute(command, opts.merge({:sudo => true}), &block)
       end
 
-      def upload(from, to, recursive=false)
+      def upload(from, to)
         @logger.debug("Uploading: #{from} to #{to}")
 
         # Do an SCP-based upload...
         connect do |connection|
           opts = {}
-          opts[:recursive] = true if File.directory?(from)
+          opts[:recursive] = true if from.is_a?(String) and File.directory?(from)
           scp = Net::SCP.new(connection)
           scp.upload!(from, to, opts)
         end
