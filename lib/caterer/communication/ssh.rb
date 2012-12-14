@@ -139,7 +139,7 @@ module Caterer
                 yield :stdout, data
               end
               if opts[:stream]
-                @server.ui.success data.chomp
+                @server.ui.success data.chomp, {:prefix => false}
               end
             end
 
@@ -151,7 +151,7 @@ module Caterer
                 yield :stderr, data
               end
               if opts[:stream]
-                @server.ui.error data.chomp
+                @server.ui.error data.chomp, {:prefix => false}
               end
             end
 

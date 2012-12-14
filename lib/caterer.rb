@@ -33,22 +33,5 @@ module Caterer
 
 end
 
-# commands
-Caterer.commands.register(:test)      { Caterer::Command::Test }
-Caterer.commands.register(:bootstrap) { Caterer::Command::Bootstrap }
-Caterer.commands.register(:provision) { Caterer::Command::Provision }
-Caterer.commands.register(:up)        { Caterer::Command::Up }
-Caterer.commands.register(:reboot)    { Caterer::Command::Reboot }
-
-# actions
-Caterer.actions.register(:bootstrap) do
-  Vli::Action::Builder.new do
-    use Caterer::Action::Config::Validate::Role
-    use Caterer::Action::Config::Validate::Provisioner
-    use Caterer::Action::Server::Validate::SSH
-    use Caterer::Action::Provisioner::Prepare
-    use Caterer::Action::Provisioner::Bootstrap
-    use Caterer::Action::Provisioner::Cleanup
-  end
-end
-
+require 'caterer/commands'
+require 'caterer/actions'

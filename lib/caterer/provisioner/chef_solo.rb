@@ -6,7 +6,7 @@ module Caterer
       
       def bootstrap(script=nil)
 
-        script ||= default_bootstrap
+        script ||= config_bootstrap || default_bootstrap
 
         if not File.exists? script
           server.ui.error "script does not exist!"
@@ -48,6 +48,10 @@ module Caterer
 
       def cookbooks_path
         ""
+      end
+
+      def config_bootstrap
+        @config.bootstrap_script
       end
 
       def default_bootstrap
