@@ -42,14 +42,14 @@ module Caterer
       Caterer.actions
     end
 
-    def load!
+    def config
       @config ||= begin
         load_default_config
         load_custom_config
         Caterer.config
       end
     end
-    alias :config :load!
+    alias :load! :config
 
     def load_default_config
       require_relative '../../config/default'

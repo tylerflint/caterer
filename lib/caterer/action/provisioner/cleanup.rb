@@ -4,7 +4,7 @@ module Caterer
       class Cleanup < Base
 
         def call(env)
-          provisioner.cleanup
+          provisioner(env).cleanup
           @app.call(env)
         end
         

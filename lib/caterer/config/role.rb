@@ -11,7 +11,7 @@ module Caterer
       end
 
       def provision(type)
-        @provisioner = "Caterer::Config::Provision::#{type.to_s.classify}".constantize.new
+        @provisioner = "Caterer::Config::Provision::#{type.to_s.classify}".constantize.new(type)
         yield @provisioner if block_given?
       end
 

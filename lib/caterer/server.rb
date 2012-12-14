@@ -13,11 +13,14 @@ module Caterer
       @port   = opts[:port]
     end
 
-    def bootstrap(opts=nil)
-      run_action(:bootstrap, opts)
+    def bootstrap(roles=[], script=nil)
+      roles.each do |r|
+        ui.info "bootstrapping role: #{r}"
+        run_action(:bootstrap, {:role => r, :script => script})
+      end
     end
 
-    def provision(opts=nil)
+    def provision(roles=[], opts=nil)
       run_action(:provision, opts)
     end
 
@@ -25,12 +28,8 @@ module Caterer
       run_action(:reboot, opts)
     end
 
-    def up(opts=nil)
+    def up(roles=[], opts=nil)
       run_action(:up, opts)
-    end
-
-    def provisioner(role=nil)
-      Provisioner::ChefSolo.new(self)
     end
 
     def ssh
@@ -71,7 +70,8 @@ module Caterer
     def run_action(name, options=nil)
       options = {
         :server => self,
-        :ui => ui
+        :ui => ui,
+        :config => env.config
       }.merge(options || {})
 
       env.action_runner.run(name, options)

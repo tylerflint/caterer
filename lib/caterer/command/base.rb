@@ -16,6 +16,12 @@ module Caterer
         opts.on('-P PORT', '--port PORT', 'assumes 22') do |p|
           options[:port] = p
         end
+        opts.on('-r ROLE', '--role ROLE', 'corresponds to a role in Caterfile') do |r|
+          options[:role] = r
+        end
+        opts.on('-g GROUP', '--group GROUP', 'corresponds to a group in Caterfile') do |g|
+          options[:group] = g
+        end
         opts.separator ""
 
         begin
@@ -33,6 +39,10 @@ module Caterer
         argv.first.split(",").each do |host|
           yield Server.new(@env, options.merge({:host => host}))
         end
+      end
+
+      def role_list(options={})
+        options[:role].split(',').map(&:to_sym)
       end
 
     end

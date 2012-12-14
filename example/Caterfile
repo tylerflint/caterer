@@ -31,7 +31,7 @@ Caterer.configure do |config|
     group.member :oven1 do |m|
       m.host = "192.168.1.100"
     end
-    
+
     group.member :oven2 do |m|
       m.host     = "192.168.1.101"
       m.password = 'samIam'

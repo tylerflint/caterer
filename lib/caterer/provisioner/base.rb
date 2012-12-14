@@ -4,8 +4,9 @@ module Caterer
 
       attr_reader :server
 
-      def initialize(server)
+      def initialize(server, config=nil)
         @server = server
+        @config = config
       end
 
       def bootstrap(script=nil);  end

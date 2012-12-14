@@ -10,7 +10,7 @@ module Caterer
 
         # Parse the options
         argv = parse_options(opts, options, false)
-        puts "whatev"
+
         0
       end
 
