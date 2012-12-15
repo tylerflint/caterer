@@ -17,7 +17,7 @@ module Caterer
         return if not argv
 
         with_target_servers(argv, options) do |server|
-          server.bootstrap(role_list(options), options[:script])
+          server.bootstrap(image_list(options), options[:script])
         end
 
         0

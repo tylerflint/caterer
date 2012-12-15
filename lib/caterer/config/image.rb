@@ -2,7 +2,7 @@ require 'active_support/inflector'
 
 module Caterer
   module Config
-    class Role
+    class Image
       
       attr_reader :name, :provisioner
 

@@ -13,7 +13,7 @@ module Caterer
         return if not argv
 
         with_target_servers(argv, options) do |server|
-          server.provision(role_list(options))
+          server.provision(image_list(options))
         end
 
         0

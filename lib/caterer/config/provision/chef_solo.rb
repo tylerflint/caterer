@@ -4,26 +4,31 @@ module Caterer
 
       class ChefSolo
         
-        attr_reader :name
-        attr_accessor :recipes, :json, :cookbooks_path, :data_bags_path, :bootstrap_script
+        attr_reader :name, :run_list
+        attr_accessor :json, :cookbooks_path, :roles_path, :data_bags_path, :bootstrap_script
 
         def initialize(name)
           @name           = name
-          @recipes        = []
+          @run_list       = []
           @json           = {}
           @cookbooks_path = ['cookbooks']
+          @roles_path     = []
           @data_bags_path = []
         end
 
         def add_recipe(recipe)
-          @recipes << recipe
+          @run_list << "recipe[#{recipe}]"
+        end
+
+        def add_role(role)
+          @run_list << "role[#{role}]"
         end
 
         def errors
           errors = {}
 
-          if not @recipes.length > 0
-            errors[:recipes] = "list is empty"
+          if not @run_list.length > 0
+            errors[:run_list] = "is empty"
           end
 
           if errors.length > 0

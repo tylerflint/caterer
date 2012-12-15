@@ -6,7 +6,7 @@ module Caterer
       class Base < Action::Base
         
         def provisioner(env)
-          config = env[:config].roles[env[:role]].provisioner
+          config = env[:config].images[env[:image]].provisioner
           "Caterer::Provisioner::#{config.name.to_s.classify}".constantize.new(env[:server], config)
         end
 

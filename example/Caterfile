@@ -1,14 +1,14 @@
 Caterer.configure do |config|
 
-  config.role :basic do |role|
-    role.provision :chef_solo do |chef|
+  config.image :basic do |image|
+    image.provision :chef_solo do |chef|
       chef.cookbooks_path = ['cookbooks'] # default
       chef.add_recipe 'ruby'
     end
   end
 
-  config.role :rails do |role|
-    role.provision :chef_solo do |chef|
+  config.image :rails do |image|
+    image.provision :chef_solo do |chef|
       chef.bootstrap_script = 'script/bootstrap'
       chef.cookbooks_path = ['cookbooks'] # default
       chef.add_recipe 'ruby'
@@ -24,7 +24,7 @@ Caterer.configure do |config|
 
   config.group :oven do |group|
 
-    group.roles    = [:basic, :rails]
+    group.images    = [:basic, :rails]
     group.user     = 'root'
     group.password = 'password'
 

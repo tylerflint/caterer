@@ -3,7 +3,7 @@ module Caterer
     module Config
       module Validate
         autoload :Provisioner,  'caterer/action/config/validate/provisioner'
-        autoload :Role,         'caterer/action/config/validate/role'
+        autoload :Image,        'caterer/action/config/validate/image'
       end
     end
   end

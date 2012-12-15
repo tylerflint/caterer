@@ -16,16 +16,16 @@ module Caterer
         end
 
         # upload
-        server.ui.info "Uploading bootstrap script"
+        server.ui.info "Uploading bootstrap script..."
         server.ssh.upload script, "#{bootstrap_path}"
 
         # set permissions
-        server.ui.info "Applying permissions"
+        server.ui.info "Applying permissions..."
         server.ssh.sudo "chown #{server.username} #{bootstrap_path}"
         server.ssh.sudo "chmod 777 #{bootstrap_path}"
 
         # run
-        server.ui.info "Running bootstrap script"
+        server.ui.info "Running bootstrap script..."
         server.ssh.sudo "#{bootstrap_path}", :stream => true
       end
 
@@ -43,12 +43,17 @@ module Caterer
         # sync cookbooks
         server.ui.info "Syncing cookbooks..."
         @config.cookbooks_path.each do |path|
-          if File.exists? path
-            unique = Digest::MD5.hexdigest(path)
-            server.ssh.upload path, "#{cookbooks_path}/#{unique}"
-            server.ssh.sudo "mv #{cookbooks_path}/#{unique}/* #{cookbooks_path}/"
-            server.ssh.sudo "rm -rf #{cookbooks_path}/#{unique}"
-          end
+          upload_directory path, cookbooks_path
+        end
+
+        # create roles directory
+        server.ssh.sudo "mkdir -p #{roles_path}"
+        server.ssh.sudo "chown -R #{server.username} #{roles_path}"
+
+        # sync roles
+        server.ui.info "Syncing roles..."
+        @config.roles_path.each do |path|
+          upload_directory path, roles_path
         end
 
         # create data_bags directory
@@ -58,12 +63,7 @@ module Caterer
         # sync databags
         server.ui.info "Syncing data bags..."
         @config.data_bags_path.each do |path|
-          if File.exists? path
-            unique = Digest::MD5.hexdigest(path)
-            server.ssh.upload path, "#{data_bags_path}/#{unique}"
-            server.ssh.sudo "mv #{data_bags_path}/#{unique}/* #{data_bags_path}/"
-            server.ssh.sudo "rm -rf #{data_bags_path}/#{unique}"
-          end
+          upload_directory path, data_bags_path
         end
 
         # create solo.rb
@@ -88,6 +88,15 @@ module Caterer
 
       protected
 
+      def upload_directory(from, to)
+        if File.exists? from
+          unique = Digest::MD5.hexdigest(from)
+          server.ssh.upload from, "#{to}/#{unique}"
+          server.ssh.sudo "mv #{to}/#{unique}/* #{to}/"
+          server.ssh.sudo "rm -rf #{to}/#{unique}"
+        end
+      end
+
       def base_path
         "/tmp/cater-chef-solo"
       end
@@ -98,6 +107,10 @@ module Caterer
 
       def cookbooks_path
         "#{base_path}/cookbooks"
+      end
+
+      def roles_path
+        "#{base_path}/roles"
       end
 
       def data_bags_path
@@ -121,8 +134,7 @@ module Caterer
       end
 
       def json_config
-        recipes = @config.recipes.map { |r| "recipe[#{r}]" }
-        MultiJson.dump(@config.json.merge({:run_list => recipes}))
+        MultiJson.dump(@config.json.merge({:run_list => @config.run_list}))
       end
 
       def json_config_path

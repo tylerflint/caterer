@@ -2,17 +2,17 @@ module Caterer
   module Config
     class Base
 
-      attr_reader :roles, :groups
+      attr_reader :images, :groups
 
       def initialize
-        @roles  = {}
+        @images  = {}
         @groups = {}
       end
 
-      def role(name)
-        role = Role.new(name)
-        yield role if block_given?
-        @roles[name] = role
+      def image(name)
+        image = Image.new(name)
+        yield image if block_given?
+        @images[name] = image
       end
 
       def group(name)

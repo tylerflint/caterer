@@ -16,8 +16,8 @@ module Caterer
         opts.on('-P PORT', '--port PORT', 'assumes 22') do |p|
           options[:port] = p
         end
-        opts.on('-r ROLE', '--role ROLE', 'corresponds to a role in Caterfile') do |r|
-          options[:role] = r
+        opts.on('-r IMAGE', '--image IMAGE', 'corresponds to a image in Caterfile') do |i|
+          options[:image] = i
         end
         opts.on('-g GROUP', '--group GROUP', 'corresponds to a group in Caterfile') do |g|
           options[:group] = g
@@ -41,8 +41,8 @@ module Caterer
         end
       end
 
-      def role_list(options={})
-        options[:role].split(',').map(&:to_sym)
+      def image_list(options={})
+        options[:image].split(',').map(&:to_sym)
       end
 
     end

@@ -13,17 +13,17 @@ module Caterer
       @port   = opts[:port]
     end
 
-    def bootstrap(roles=[], script=nil, opts={})
-      roles.each do |r|
-        ui.info "Bootstrapping role: #{r}"
-        run_action(:bootstrap, opts.merge({:role => r, :script => script}))
+    def bootstrap(images=[], script=nil, opts={})
+      images.each do |i|
+        ui.info "*** Bootstrapping image: #{i} ***"
+        run_action(:bootstrap, opts.merge({:image => i, :script => script}))
       end
     end
 
-    def provision(roles=[], opts={})
-      roles.each do |r|
-        ui.info "Provisioning role: #{r}"
-        run_action(:provision, opts.merge({:role => r}))
+    def provision(images=[], opts={})
+      images.each do |i|
+        ui.info "*** Provisioning image: #{i} ***"
+        run_action(:provision, opts.merge({:image => i}))
       end
     end
 
@@ -31,10 +31,10 @@ module Caterer
       run_action(:reboot, opts)
     end
 
-    def up(roles=[], script=nil, opts={})
-      roles.each do |r|
-        ui.info "Up'ing role: #{r}"
-        run_action(:up, opts.merge({:role => r, :script => script}))
+    def up(images=[], script=nil, opts={})
+      images.each do |i|
+        ui.info "*** Up'ing image: #{i} ***"
+        run_action(:up, opts.merge({:image => i, :script => script}))
       end
     end
 

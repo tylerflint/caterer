@@ -1,7 +1,7 @@
 # actions
 Caterer.actions.register(:validate) do
   Vli::Action::Builder.new do
-    use Caterer::Action::Config::Validate::Role
+    use Caterer::Action::Config::Validate::Image
     use Caterer::Action::Config::Validate::Provisioner
     use Caterer::Action::Server::Validate::SSH
   end
