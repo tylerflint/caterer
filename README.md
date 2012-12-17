@@ -79,6 +79,12 @@ Caterer.configure do |config|
     end
   end
 
+  config.member :m1 do |member|
+    member.images = [:basic]
+    member.host     = "192.168.1.101"
+    member.password = 'samIam'
+  end
+
   config.group :oven do |group|
 
     group.images    = [:basic, :rails]
@@ -98,6 +104,56 @@ Caterer.configure do |config|
   end
 
 end
+```
+
+### Command Line
+
+Provision a server with a basic image (image defined in Caterfile)
+
+```bash
+cater provision -i basic HOST
+```
+
+Provision a server with multiple images (images defined in Caterfile)
+
+```bash
+cater provision -i basic,rails HOST
+```
+
+Provision a server with a group (group defined in Caterfile)
+
+```bash
+cater provision -g oven HOST
+```
+
+Provision a server from a member defined in Caterfile
+
+```bash
+cater provision m1
+```
+
+Provision a server from a group member
+
+```bash
+cater provision oven::oven1
+```
+
+Provision multiple servers from members defined in Caterfile
+
+```bash
+cater provision m1,oven::oven1,oven::oven2
+```
+
+Bootstrap a server
+
+```bash
+cater bootstrap -i basic HOST
+```
+
+Boostrap and provision a server
+
+```bash
+cater up -i basic HOST
 ```
 
 ## Contributing
