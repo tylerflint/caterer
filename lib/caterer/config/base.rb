@@ -6,21 +6,25 @@ module Caterer
 
       def initialize
         @images  = {}
-        @groups = {}
+        @groups  = {}
       end
 
       def image(name)
-        image = Image.new(name)
-        yield image if block_given?
-        @images[name] = image
+        @images[name] ||= Image.new(name)
+        yield @images[name] if block_given?
       end
 
       def group(name)
-        group = Group.new(name) 
-        yield group if block_given?
-        @groups[name] = group
+        @groups[name] ||= Group.new(name)
+        yield @groups[name] if block_given?
       end
       
+      def member(name, &block)
+        group(:default) do |d|
+          d.member(name, &block)
+        end
+      end
+
     end
   end
 end

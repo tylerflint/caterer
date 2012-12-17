@@ -16,7 +16,7 @@ module Caterer
         opts.on('-P PORT', '--port PORT', 'assumes 22') do |p|
           options[:port] = p
         end
-        opts.on('-r IMAGE', '--image IMAGE', 'corresponds to a image in Caterfile') do |i|
+        opts.on('-i IMAGE', '--image IMAGE', 'corresponds to a image in Caterfile') do |i|
           options[:image] = i
         end
         opts.on('-g GROUP', '--group GROUP', 'corresponds to a group in Caterfile') do |g|
@@ -35,14 +35,64 @@ module Caterer
         
       end
 
-      def with_target_servers(argv, options={})
-        argv.first.split(",").each do |host|
-          yield Server.new(@env, options.merge({:host => host}))
+      def target_servers(argv, options={})
+        @servers ||= begin
+          servers = []
+
+          argv.first.split(",").each do |host|
+            
+            if group = @env.config.groups[host.to_sym]
+              group.members.each do |member|
+                servers << init_server(group, member, options)
+              end
+            else
+
+              if not host.match /::/
+                host = "default::#{host}"
+              end
+
+              g, m   = host.split "::"
+              group  = nil
+              member = nil
+
+              if group = @env.config.groups[g.to_sym]
+                member = group.members[m.to_sym]
+              end
+
+              servers << init_server(group, member, options.merge(:host => m))
+            end
+          end    
+
+          servers
         end
       end
 
+      def with_target_servers(argv, options={})
+        target_servers(argv, options).each do |server|
+          yield server if block_given?
+        end
+      end
+
+      def init_server(group=nil, member=nil, options={})
+
+        group ||= Config::Group.new
+        member ||= Config::Member.new
+
+        opts = {}
+        opts[:alias]  = member.name
+        opts[:user]   = options[:user] || member.user || group.user
+        opts[:pass]   = options[:pass] || member.password || group.password
+        opts[:host]   = member.host || options[:host]
+        opts[:port]   = options[:port] || member.port
+        opts[:images] = image_list(options) || member.images || group.images
+
+        Server.new(@env, opts)
+      end
+
       def image_list(options={})
-        options[:image].split(',').map(&:to_sym)
+        if images = options[:image]
+          images.split(',').map(&:to_sym)
+        end
       end
 
     end

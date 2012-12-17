@@ -3,22 +3,21 @@ module Caterer
     class Group
 
       attr_reader    :name
-      attr_accessor  :roles, :members, :user, :password
+      attr_accessor  :images, :members, :user, :password
 
-      def initialize(name)
+      def initialize(name=nil)
         @name    = name
-        @roles   = []
-        @members = []
+        @images  = []
+        @members = {}
       end
 
-      def add_role(role)
-        @roles << role
+      def add_image(image)
+        @images << image
       end
 
       def member(name)
-        member = Member.new(name)
-        yield member if block_given?
-        @members << member
+        @members[name] ||= Member.new(name)
+        yield @members[name] if block_given?
       end
     end
   end

@@ -7,34 +7,36 @@ module Caterer
 
     def initialize(env, opts=nil)
       @env    = env || Environment.new
+      @alias  = opts[:alias]
       @user   = opts[:user]
       @pass   = opts[:pass]
       @host   = opts[:host]
       @port   = opts[:port]
+      @images = opts[:images] || []
     end
 
-    def bootstrap(images=[], script=nil, opts={})
-      images.each do |i|
+    def bootstrap(opts={})
+      @images.each do |i|
         ui.info "*** Bootstrapping image: #{i} ***"
-        run_action(:bootstrap, opts.merge({:image => i, :script => script}))
+        run_action(:bootstrap, opts.merge({:image => i}))
       end
     end
 
-    def provision(images=[], opts={})
-      images.each do |i|
+    def provision(opts={})
+      @images.each do |i|
         ui.info "*** Provisioning image: #{i} ***"
         run_action(:provision, opts.merge({:image => i}))
       end
     end
 
-    def reboot(opts=nil)
+    def reboot(opts={})
       run_action(:reboot, opts)
     end
 
-    def up(images=[], script=nil, opts={})
-      images.each do |i|
+    def up(opts={})
+      @images.each do |i|
         ui.info "*** Up'ing image: #{i} ***"
-        run_action(:up, opts.merge({:image => i, :script => script}))
+        run_action(:up, opts.merge({:image => i}))
       end
     end
 
@@ -52,9 +54,13 @@ module Caterer
     def ui
       @ui ||= begin
         ui = @env.ui.dup
-        ui.resource = host
+        ui.resource = name
         ui
       end
+    end
+
+    def name
+      @alias || host
     end
 
     def username

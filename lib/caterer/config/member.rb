@@ -3,9 +3,9 @@ module Caterer
     class Member
 
       attr_reader :name
-      attr_accessor :host, :user, :password
+      attr_accessor :host, :port, :user, :password, :images
       
-      def initialize(name)
+      def initialize(name=nil)
         @name = name
       end
 
