@@ -35,6 +35,12 @@ module Caterer
         
       end
 
+      def with_target_servers(argv, options={})
+        target_servers(argv, options).each do |server|
+          yield server if block_given?
+        end
+      end
+
       def target_servers(argv, options={})
         @servers ||= begin
           servers = []
@@ -64,12 +70,6 @@ module Caterer
           end    
 
           servers
-        end
-      end
-
-      def with_target_servers(argv, options={})
-        target_servers(argv, options).each do |server|
-          yield server if block_given?
         end
       end
 

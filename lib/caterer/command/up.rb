@@ -17,7 +17,7 @@ module Caterer
         return if not argv
 
         with_target_servers(argv, options) do |server|
-          server.up(image_list(options), options[:script])
+          server.up({:script => options[:script])
         end
 
         0

@@ -16,6 +16,9 @@ module Caterer
     end
 
     def bootstrap(opts={})
+      if @images.length == 0
+        ui.error "image list is empty, nothing to do"
+      end
       @images.each do |i|
         ui.info "*** Bootstrapping image: #{i} ***"
         run_action(:bootstrap, opts.merge({:image => i}))
@@ -23,6 +26,9 @@ module Caterer
     end
 
     def provision(opts={})
+      if @images.length == 0
+        ui.error "image list is empty, nothing to do"
+      end
       @images.each do |i|
         ui.info "*** Provisioning image: #{i} ***"
         run_action(:provision, opts.merge({:image => i}))
@@ -34,6 +40,9 @@ module Caterer
     end
 
     def up(opts={})
+      if @images.length == 0
+        ui.error "image list is empty, nothing to do"
+      end
       @images.each do |i|
         ui.info "*** Up'ing image: #{i} ***"
         run_action(:up, opts.merge({:image => i}))
