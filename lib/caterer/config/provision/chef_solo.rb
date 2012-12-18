@@ -12,8 +12,8 @@ module Caterer
           @run_list       = []
           @json           = {}
           @cookbooks_path = ['cookbooks']
-          @roles_path     = []
-          @data_bags_path = []
+          @roles_path     = ['roles']
+          @data_bags_path = ['data_bags']
         end
 
         def add_recipe(recipe)

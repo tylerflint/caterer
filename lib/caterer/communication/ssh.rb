@@ -39,7 +39,8 @@ module Caterer
       end
 
       def sudo(command, opts={}, &block)
-        execute(command, opts.merge({:sudo => true}), &block)
+        sudo = (@server.username == 'root') ? false : true
+        execute(command, opts.merge({:sudo => sudo}), &block)
       end
 
       def upload(from, to)
@@ -97,6 +98,7 @@ module Caterer
         ]
 
         @logger.info("Connecting to SSH: (#{@server.host}:#{@server.port}")
+        @server.ui.info "Connecting..."
         connection = retryable(:tries => 10, :on => exceptions) do
           Net::SSH.start(@server.host, @server.username, @server.ssh_opts)
         end
@@ -132,26 +134,26 @@ module Caterer
           ch.exec(shell) do |ch2, _|
             # Setup the channel callbacks so we can get data and exit status
             ch2.on_data do |ch3, data|
+              @logger.debug("stdout: #{data}")
               if block_given?
                 # Filter out the clear screen command
                 data = remove_ansi_escape_codes(data)
-                @logger.debug("stdout: #{data}")
                 yield :stdout, data
               end
               if opts[:stream]
-                @server.ui.success data.chomp, {:prefix => false}
+                @server.ui.info data, {:prefix => false, :new_line => false}
               end
             end
 
             ch2.on_extended_data do |ch3, type, data|
+              @logger.debug("stderr: #{data}")
               if block_given?
                 # Filter out the clear screen command
                 data = remove_ansi_escape_codes(data)
-                @logger.debug("stderr: #{data}")
                 yield :stderr, data
               end
               if opts[:stream]
-                @server.ui.error data.chomp, {:prefix => false}
+                @server.ui.info data, {:prefix => false, :new_line => false}
               end
             end
 

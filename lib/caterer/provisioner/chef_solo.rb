@@ -21,8 +21,8 @@ module Caterer
 
         # set permissions
         server.ui.info "Applying permissions..."
-        server.ssh.sudo "chown #{server.username} #{bootstrap_path}"
-        server.ssh.sudo "chmod 777 #{bootstrap_path}"
+        server.ssh.sudo "chown #{server.username} #{bootstrap_path}", :stream => true
+        server.ssh.sudo "chmod 777 #{bootstrap_path}", :stream => true
 
         # run
         server.ui.info "Running bootstrap script..."
@@ -30,15 +30,15 @@ module Caterer
       end
 
       def prepare
-        server.ssh.sudo "mkdir -p #{base_path}"
-        server.ssh.sudo "chown #{server.username} #{base_path}"
+        server.ssh.sudo "mkdir -p #{base_path}", :stream => true
+        server.ssh.sudo "chown #{server.username} #{base_path}", :stream => true
       end
 
       def provision
 
         # create cookbooks directory
-        server.ssh.sudo "mkdir -p #{cookbooks_path}"
-        server.ssh.sudo "chown -R #{server.username} #{cookbooks_path}"
+        server.ssh.sudo "mkdir -p #{cookbooks_path}", :stream => true
+        server.ssh.sudo "chown -R #{server.username} #{cookbooks_path}", :stream => true
 
         # sync cookbooks
         server.ui.info "Syncing cookbooks..."
@@ -47,8 +47,8 @@ module Caterer
         end
 
         # create roles directory
-        server.ssh.sudo "mkdir -p #{roles_path}"
-        server.ssh.sudo "chown -R #{server.username} #{roles_path}"
+        server.ssh.sudo "mkdir -p #{roles_path}", :stream => true
+        server.ssh.sudo "chown -R #{server.username} #{roles_path}", :stream => true
 
         # sync roles
         server.ui.info "Syncing roles..."
@@ -57,8 +57,8 @@ module Caterer
         end
 
         # create data_bags directory
-        server.ssh.sudo "mkdir -p #{data_bags_path}"
-        server.ssh.sudo "chown -R #{server.username} #{data_bags_path}"
+        server.ssh.sudo "mkdir -p #{data_bags_path}", :stream => true
+        server.ssh.sudo "chown -R #{server.username} #{data_bags_path}", :stream => true
 
         # sync databags
         server.ui.info "Syncing data bags..."
@@ -75,7 +75,7 @@ module Caterer
         server.ssh.upload(StringIO.new(json_config), json_config_path)
 
         # set permissions on everything
-        server.ssh.sudo "chown -R #{server.username} #{base_path}"
+        server.ssh.sudo "chown -R #{server.username} #{base_path}", :stream => true
 
         # run
         server.ui.info "Running chef-solo..."
@@ -83,7 +83,7 @@ module Caterer
       end
 
       def cleanup
-        server.ssh.sudo "rm -rf #{base_path}"
+        server.ssh.sudo "rm -rf #{base_path}", :stream => true
       end
 
       protected
@@ -92,8 +92,8 @@ module Caterer
         if File.exists? from
           unique = Digest::MD5.hexdigest(from)
           server.ssh.upload from, "#{to}/#{unique}"
-          server.ssh.sudo "mv #{to}/#{unique}/* #{to}/"
-          server.ssh.sudo "rm -rf #{to}/#{unique}"
+          server.ssh.sudo "mv #{to}/#{unique}/* #{to}/", :stream => true
+          server.ssh.sudo "rm -rf #{to}/#{unique}", :stream => true
         end
       end
 
@@ -122,7 +122,7 @@ module Caterer
       end
 
       def default_bootstrap
-        "lib/templates/provisioner/chef_solo/bootstrap.sh"
+        File.expand_path("../../../templates/provisioner/chef_solo/bootstrap.sh", __FILE__)
       end
 
       def solo_path
@@ -130,7 +130,7 @@ module Caterer
       end
 
       def solo_content
-        Tilt.new('lib/templates/provisioner/chef_solo/solo.erb').render(self)
+        Tilt.new(File.expand_path('../../../templates/provisioner/chef_solo/solo.erb', __FILE__)).render(self)
       end
 
       def json_config
