@@ -134,24 +134,32 @@ module Caterer
           ch.exec(shell) do |ch2, _|
             # Setup the channel callbacks so we can get data and exit status
             ch2.on_data do |ch3, data|
+
               @logger.debug("stdout: #{data}")
-              if block_given?
-                # Filter out the clear screen command
-                data = remove_ansi_escape_codes(data)
-                yield :stdout, data
-              end
+
+              # Filter out the clear screen command
+              data = remove_ansi_escape_codes(data)
+              # Filter annoying messages
+              data = remove_cruft(data)
+
+              yield :stdout, data if block_given?
+
               if opts[:stream]
                 @server.ui.info data, {:prefix => false, :new_line => false}
               end
             end
 
             ch2.on_extended_data do |ch3, type, data|
+
               @logger.debug("stderr: #{data}")
-              if block_given?
-                # Filter out the clear screen command
-                data = remove_ansi_escape_codes(data)
-                yield :stderr, data
-              end
+
+              # Filter out the clear screen command
+              data = remove_ansi_escape_codes(data)
+              # Filter annoying messages
+              data = remove_cruft(data)
+
+              yield :stderr, data if block_given?
+
               if opts[:stream]
                 @server.ui.info data, {:prefix => false, :new_line => false}
               end
@@ -178,6 +186,13 @@ module Caterer
 
         # Return the final exit status
         return exit_status
+      end
+
+      def remove_cruft(string)
+        ["stdin: is not a tty\n"].each do |m|
+          string.gsub! m, ''
+        end
+        string
       end
 
     end

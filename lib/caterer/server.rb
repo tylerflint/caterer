@@ -53,6 +53,14 @@ module Caterer
       @ssh ||= Communication::SSH.new(self)
     end
 
+    def rsync
+      @rsync ||= Communication::Rsync.new(self)
+    end
+
+    def can_rsync?
+      true
+    end
+
     def ssh_opts
       {
         :port => port,

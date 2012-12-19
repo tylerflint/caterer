@@ -83,17 +83,22 @@ module Caterer
       end
 
       def cleanup
-        server.ssh.sudo "rm -rf #{base_path}", :stream => true
+        # server.ssh.sudo "rm -rf #{base_path}", :stream => true
       end
 
       protected
 
       def upload_directory(from, to)
         if File.exists? from
-          unique = Digest::MD5.hexdigest(from)
-          server.ssh.upload from, "#{to}/#{unique}"
-          server.ssh.sudo "mv #{to}/#{unique}/* #{to}/", :stream => true
-          server.ssh.sudo "rm -rf #{to}/#{unique}", :stream => true
+          if @server.can_rsync?
+            from += "/" if not from.match /\/$/
+            @server.rsync.sync(from, to)        
+          else
+            unique = Digest::MD5.hexdigest(from)
+            server.ssh.upload from, "#{to}/#{unique}"
+            server.ssh.sudo "mv #{to}/#{unique}/* #{to}/", :stream => true
+            server.ssh.sudo "rm -rf #{to}/#{unique}", :stream => true
+          end
         end
       end
 
@@ -114,7 +119,7 @@ module Caterer
       end
 
       def data_bags_path
-        "#{base_path}/data_bags" 
+        "#{base_path}/data_bags"
       end
 
       def config_bootstrap

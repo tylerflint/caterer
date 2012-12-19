@@ -24,6 +24,10 @@ module Caterer
           @run_list << "role[#{role}]"
         end
 
+        def add_image(image)
+          @run_list += Caterer.config.images[image].provisioner.run_list
+        end
+
         def errors
           errors = {}
 
