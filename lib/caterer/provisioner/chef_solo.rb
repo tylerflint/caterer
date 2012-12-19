@@ -31,7 +31,7 @@ module Caterer
 
       def prepare
         server.ssh.sudo "mkdir -p #{base_path}", :stream => true
-        server.ssh.sudo "chown #{server.username} #{base_path}", :stream => true
+        server.ssh.sudo "chown -R #{server.username} #{base_path}", :stream => true
       end
 
       def provision
