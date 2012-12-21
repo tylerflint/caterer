@@ -3,7 +3,7 @@ module Caterer
     class Group
 
       attr_reader    :name
-      attr_accessor  :images, :members, :user, :password
+      attr_accessor  :images, :members, :user, :password, :data
 
       def initialize(name=nil)
         @name    = name

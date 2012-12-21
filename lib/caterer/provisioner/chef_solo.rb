@@ -197,7 +197,11 @@ module Caterer
       end
 
       def json_config
-        MultiJson.dump(config.json.merge({:run_list => config.run_list}))
+        MultiJson.dump(config_data)
+      end
+
+      def config_data
+        config.json.merge(server.data).merge({:run_list => config.run_list})
       end
 
       def json_config_path

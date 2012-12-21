@@ -13,6 +13,7 @@ module Caterer
       @host   = opts[:host]
       @port   = opts[:port]
       @images = opts[:images] || []
+      @data   = opts[:data] || {}
     end
 
     def bootstrap(opts={})
@@ -94,6 +95,12 @@ module Caterer
 
     def port
       @port || 22
+    end
+
+    def data
+      @data_hash ||= begin
+        (@data.is_a? Hash) ? @data : {}
+      end
     end
 
     def run_action(name, options=nil)

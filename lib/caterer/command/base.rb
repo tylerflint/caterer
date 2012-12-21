@@ -1,3 +1,6 @@
+require 'oj'
+require 'multi_json'
+
 module Caterer
   module Command
     class Base < Vli::Command::Base
@@ -15,6 +18,9 @@ module Caterer
         end
         opts.on('-P PORT', '--port PORT', 'assumes 22') do |p|
           options[:port] = p
+        end
+        opts.on('-d JSON', '--data JSON', 'json data that the provisioner may use' )do |d|
+          options[:data] = d
         end
         opts.on('-i IMAGE', '--image IMAGE', 'corresponds to a image in Caterfile') do |i|
           options[:image] = i
@@ -85,6 +91,14 @@ module Caterer
         opts[:host]   = member.host || options[:host]
         opts[:port]   = options[:port] || member.port
         opts[:images] = image_list(options) || member.images || group.images
+
+        opts[:data] = begin
+          data = nil
+          if json = options[:data]
+            data = MultiJson.load json rescue nil
+          end
+          data || member.data || group.data
+        end
 
         Server.new(@env, opts)
       end

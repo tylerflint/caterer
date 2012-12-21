@@ -3,7 +3,7 @@ module Caterer
     class Member
 
       attr_reader :name
-      attr_accessor :host, :port, :user, :password, :images
+      attr_accessor :host, :port, :user, :password, :images, :data
       
       def initialize(name=nil)
         @name = name
