@@ -4,7 +4,7 @@ module Caterer
       class Bootstrap < Base
         
         def call(env)
-          provisioner(env).bootstrap(env[:script])
+          provisioner(env).bootstrap
           @app.call(env)
         end
 

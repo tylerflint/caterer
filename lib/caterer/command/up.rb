@@ -6,10 +6,6 @@ module Caterer
         options = {}
         opts = OptionParser.new do |opts|
           opts.banner = "Usage: cater provision HOST [options]"
-          opts.separator ""
-          opts.on("-s SCRIPT", "--script SCRIPT", 'optional bootstrap script') do |s|
-            options[:script] = s
-          end
         end
 
         # Parse the options
@@ -17,7 +13,7 @@ module Caterer
         return if not argv
 
         with_target_servers(argv, options) do |server|
-          server.up({:script => options[:script]})
+          server.up
         end
 
         0
