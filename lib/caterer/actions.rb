@@ -32,6 +32,7 @@ Caterer.actions.register(:provision) do
   Vli::Action::Builder.new do
     use Caterer.actions.get(:validate)
     use Caterer.actions.get(:prepare)
+    use Caterer::Action::Provisioner::Install
     use Caterer::Action::Provisioner::Provision
     use Caterer.actions.get(:cleanup)
   end
@@ -42,6 +43,7 @@ Caterer.actions.register(:up) do
     use Caterer.actions.get(:validate)
     use Caterer.actions.get(:prepare)
     use Caterer::Action::Provisioner::Bootstrap
+    use Caterer::Action::Provisioner::Install
     use Caterer::Action::Provisioner::Provision
     use Caterer.actions.get(:cleanup)
   end

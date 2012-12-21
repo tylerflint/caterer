@@ -1,3 +1,5 @@
+file_cache_path "<%= base_path %>"
 node_name "<%= server.host %>"
-cookbook_path "<%= cookbooks_path %>"
+cookbook_path <%= config.cookbooks_path.map { |path| "#{cookbooks_path}/#{Digest::MD5.hexdigest(path)}" }.inspect %>
 data_bag_path "<%= data_bags_path %>"
+role_path "<%= roles_path %>"

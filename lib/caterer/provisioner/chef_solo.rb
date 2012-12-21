@@ -10,11 +10,15 @@ module Caterer
       
       def bootstrap
 
+        if bootstrap_scripts.length == 0
+          server.ui.warn "No bootstrap scripts to execute"
+        end
+
         # validate
         with_bootstrap_scripts do |script, count|
 
           if not File.exists? script
-            server.ui.error "Script does not exist!"
+            server.ui.error "#{script} does not exist!"
             return
           end
 
@@ -42,11 +46,13 @@ module Caterer
       end
 
       def prepare
-        server.ui.info "Preparing installation..."
-
         # create base dir
         server.ssh.sudo "mkdir -p #{base_path}", :stream => true
         server.ssh.sudo "chown -R #{server.username} #{base_path}", :stream => true
+      end
+
+      def install
+        server.ui.info "Preparing installation..."
 
         # upload
         server.ssh.upload install_script, "#{install_path}"
@@ -68,8 +74,8 @@ module Caterer
 
         # sync cookbooks
         server.ui.info "Syncing cookbooks..."
-        @config.cookbooks_path.each do |path|
-          upload_directory path, cookbooks_path
+        config.cookbooks_path.each do |path|
+          upload_directory path, "#{cookbooks_path}/#{Digest::MD5.hexdigest(path)}"
         end
 
         # create roles directory
@@ -78,7 +84,7 @@ module Caterer
 
         # sync roles
         server.ui.info "Syncing roles..."
-        @config.roles_path.each do |path|
+        config.roles_path.each do |path|
           upload_directory path, roles_path
         end
 
@@ -88,7 +94,7 @@ module Caterer
 
         # sync databags
         server.ui.info "Syncing data bags..."
-        @config.data_bags_path.each do |path|
+        config.data_bags_path.each do |path|
           upload_directory path, data_bags_path
         end
 
@@ -141,13 +147,13 @@ module Caterer
       end
 
       def with_bootstrap_scripts
-        @config.bootstrap_scripts.each_with_index do |script, index|
+        config.bootstrap_scripts.each_with_index do |script, index|
           yield script, index if block_given?
         end
       end
 
       def bootstrap_scripts
-        @config.bootstrap_scripts
+        config.bootstrap_scripts
       end
 
       def base_path
@@ -175,7 +181,7 @@ module Caterer
       end
 
       def config_bootstrap
-        @config.bootstrap_script
+        config.bootstrap_script
       end
 
       def install_script
@@ -191,7 +197,7 @@ module Caterer
       end
 
       def json_config
-        MultiJson.dump(@config.json.merge({:run_list => @config.run_list}))
+        MultiJson.dump(config.json.merge({:run_list => config.run_list}))
       end
 
       def json_config_path

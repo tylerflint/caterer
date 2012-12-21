@@ -4,6 +4,7 @@ module Caterer
       autoload :Base,       'caterer/action/provisioner/base'
       autoload :Bootstrap,  'caterer/action/provisioner/bootstrap'
       autoload :Cleanup,    'caterer/action/provisioner/cleanup'
+      autoload :Install,    'caterer/action/provisioner/install'
       autoload :Prepare,    'caterer/action/provisioner/prepare'
       autoload :Provision,  'caterer/action/provisioner/provision'
     end
