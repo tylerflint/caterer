@@ -95,7 +95,7 @@ module Caterer
         opts[:data] = begin
           data = nil
           if json = options[:data]
-            data = MultiJson.load json rescue nil
+            data = MultiJson.load json, :symbolize_keys => true rescue nil
           end
           data || member.data || group.data
         end
