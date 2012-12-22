@@ -12,6 +12,7 @@ module Caterer
       @pass   = opts[:pass]
       @host   = opts[:host]
       @port   = opts[:port]
+      @key    = opts[:key]
       @images = opts[:images] || []
       @data   = opts[:data] || {}
     end
@@ -63,10 +64,12 @@ module Caterer
     end
 
     def ssh_opts
-      {
-        :port => port,
-        :password => password
-      }
+      {}.tap do |opts|
+        opts[:paranoid] = false
+        opts[:port]     = port
+        opts[:password] = password if password
+        opts[:keys]     = ["#{@key}"] if @key
+      end
     end
 
     def ui

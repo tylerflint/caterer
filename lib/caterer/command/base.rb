@@ -16,6 +16,9 @@ module Caterer
         opts.on('-p PASSWORD', '--password PASSWORD', 'assumes key') do |p|
           options[:pass] = p
         end
+        opts.on('-k KEY', '--key KEY', 'path to private key') do |k|
+          options[:key] = k
+        end
         opts.on('-P PORT', '--port PORT', 'assumes 22') do |p|
           options[:port] = p
         end
@@ -91,6 +94,7 @@ module Caterer
         opts[:host]   = member.host || options[:host]
         opts[:port]   = options[:port] || member.port
         opts[:images] = image_list(options) || member.images || group.images
+        opts[:key]    = options[:key]
 
         opts[:data] = begin
           data = nil

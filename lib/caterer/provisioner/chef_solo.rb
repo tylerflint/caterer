@@ -125,7 +125,7 @@ module Caterer
         server.ssh.sudo "rm -f #{solo_path}", :stream => true
 
         # json
-        server.ssh.sudo "rm -f #{json_config_path}", :stream => true
+        # server.ssh.sudo "rm -f #{json_config_path}", :stream => true
 
         # for now, leave cookbooks, roles, and data bags for faster provisioning
       end
@@ -201,7 +201,7 @@ module Caterer
       end
 
       def config_data
-        config.json.merge(server.data).merge({:run_list => config.run_list})
+        {:run_list => config.run_list}.merge(config.json).merge(server.data)
       end
 
       def json_config_path
