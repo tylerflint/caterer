@@ -94,7 +94,7 @@ module Caterer
         opts[:host]   = member.host || options[:host]
         opts[:port]   = options[:port] || member.port
         opts[:images] = image_list(options) || member.images || group.images
-        opts[:key]    = options[:key]
+        opts[:key]    = options[:key] || member.key || group.key
 
         opts[:data] = begin
           data = nil
