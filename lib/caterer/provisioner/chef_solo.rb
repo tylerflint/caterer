@@ -115,6 +115,8 @@ module Caterer
       end
 
       def cleanup
+        server.ui.info "Cleaning up..."
+
         # installer
         server.ssh.sudo "rm -f #{install_path}", :stream => true
 
@@ -157,7 +159,7 @@ module Caterer
       end
 
       def base_path
-        "/tmp/cater-chef-solo"
+        "/tmp/cater-chef-solo-#{@image}"
       end
 
       def install_path
@@ -180,16 +182,20 @@ module Caterer
         "#{base_path}/data_bags"
       end
 
+      def solo_path
+        "#{base_path}/solo.rb"
+      end
+
+      def json_config_path
+        "#{base_path}/config.json"
+      end
+
       def config_bootstrap
         config.bootstrap_script
       end
 
       def install_script
         File.expand_path("../../../templates/provisioner/chef_solo/bootstrap.sh", __FILE__)
-      end
-
-      def solo_path
-        "#{base_path}/solo.rb"
       end
 
       def solo_content
@@ -202,10 +208,6 @@ module Caterer
 
       def config_data
         {:run_list => config.run_list}.merge(config.json).merge(server.data)
-      end
-
-      def json_config_path
-        "#{base_path}/config.json"
       end
 
       def command_string

@@ -22,7 +22,10 @@ module Caterer
         opts.on('-P PORT', '--port PORT', 'assumes 22') do |p|
           options[:port] = p
         end
-        opts.on('-d JSON', '--data JSON', 'json data that the provisioner may use' )do |d|
+        opts.on('-e ENGINE', '--engine ENGINE', 'provision engine' ) do |e|
+          options[:engine] = e
+        end
+        opts.on('-d JSON', '--data JSON', 'json data that the provisioner may use' ) do |d|
           options[:data] = d
         end
         opts.on('-i IMAGE', '--image IMAGE', 'corresponds to a image in Caterfile') do |i|

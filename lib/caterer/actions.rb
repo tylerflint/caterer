@@ -4,47 +4,60 @@ Caterer.actions.register(:validate) do
     use Caterer::Action::Config::Validate::Image
     use Caterer::Action::Config::Validate::Provisioner
     use Caterer::Action::Server::Validate::SSH
+    use Caterer::Action::Server::Validate::Unlocked
   end
 end
 
-Caterer.actions.register(:prepare) do
+Caterer.actions.register(:lock) do
   Vli::Action::Builder.new do
-    use Caterer::Action::Provisioner::Prepare
+    use Caterer::Action::Config::Validate::Image
+    use Caterer::Action::Config::Validate::Provisioner
+    use Caterer::Action::Server::Validate::SSH
+    use Caterer::Action::Server::Lock
   end
 end
 
-Caterer.actions.register(:cleanup) do
+Caterer.actions.register(:unlock) do
   Vli::Action::Builder.new do
-    use Caterer::Action::Provisioner::Cleanup
+    use Caterer::Action::Config::Validate::Image
+    use Caterer::Action::Config::Validate::Provisioner
+    use Caterer::Action::Server::Validate::SSH
+    use Caterer::Action::Server::Unlock
   end
 end
 
 Caterer.actions.register(:bootstrap) do
   Vli::Action::Builder.new do
     use Caterer.actions.get(:validate)
-    use Caterer.actions.get(:prepare)
+    use Caterer::Action::Provisioner::Prepare
+    use Caterer::Action::Server::Lock
     use Caterer::Action::Provisioner::Bootstrap
-    use Caterer.actions.get(:cleanup)
+    use Caterer::Action::Provisioner::Cleanup
+    use Caterer::Action::Server::Unlock
   end
 end
 
 Caterer.actions.register(:provision) do
   Vli::Action::Builder.new do
     use Caterer.actions.get(:validate)
-    use Caterer.actions.get(:prepare)
+    use Caterer::Action::Provisioner::Prepare
+    use Caterer::Action::Server::Lock
     use Caterer::Action::Provisioner::Install
     use Caterer::Action::Provisioner::Provision
-    use Caterer.actions.get(:cleanup)
+    use Caterer::Action::Provisioner::Cleanup
+    use Caterer::Action::Server::Unlock
   end
 end
 
 Caterer.actions.register(:up) do
   Vli::Action::Builder.new do
     use Caterer.actions.get(:validate)
-    use Caterer.actions.get(:prepare)
+    use Caterer::Action::Provisioner::Prepare
+    use Caterer::Action::Server::Lock
     use Caterer::Action::Provisioner::Bootstrap
     use Caterer::Action::Provisioner::Install
     use Caterer::Action::Provisioner::Provision
-    use Caterer.actions.get(:cleanup)
+    use Caterer::Action::Provisioner::Cleanup
+    use Caterer::Action::Server::Unlock
   end
 end

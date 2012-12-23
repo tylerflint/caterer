@@ -51,6 +51,41 @@ module Caterer
       end
     end
 
+    def lock(opts={})
+      if @images.length == 0
+        ui.error "image list is empty, nothing to do"
+      end
+      @images.each do |i|
+        ui.info "*** Locking image: #{i} ***"
+        run_action(:lock, opts.merge({:image => i}))
+      end
+    end
+
+    def unlock(opts={})
+      if @images.length == 0
+        ui.error "image list is empty, nothing to do"
+      end
+      @images.each do |i|
+        ui.info "*** Unlocking image: #{i} ***"
+        run_action(:unlock, opts.merge({:image => i}))
+      end
+    end
+
+    def lock!
+      ui.info "Locking..."
+      ssh.sudo "touch #{lock_path}"
+    end
+
+    def unlock!
+      ui.info "Unlocking..."
+      ssh.sudo "rm -f #{lock_path}"
+    end
+
+    def locked?
+      res = ssh.sudo "[ -f #{lock_path} ]"
+      res == 0 ? true : false
+    end
+
     def ssh
       @ssh ||= Communication::SSH.new(self)
     end
@@ -114,6 +149,12 @@ module Caterer
       }.merge(options || {})
 
       env.action_runner.run(name, options)
+    end
+
+    protected
+
+    def lock_path
+      "/tmp/cater.lock"
     end
 
   end
