@@ -4,17 +4,17 @@ module Caterer
 
       attr_reader :server, :config
 
-      def initialize(server, image, config=nil)
+      def initialize(server, config=nil)
         @server = server
-        @image  = image
         @config = config
       end
 
-      def bootstrap;  end
-      def cleanup;    end
-      def install;    end
-      def prepare;    end
-      def provision;  end
+      def bootstrap; end
+      def bootstrapped?; true; end
+      def cleanup; end
+      def install; end
+      def prepare; end
+      def provision; end
 
     end
   end

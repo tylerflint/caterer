@@ -15,6 +15,10 @@ module Caterer
       @key    = opts[:key]
       @images = opts[:images] || []
       @data   = opts[:data] || {}
+
+      @logger = Log4r::Logger.new("caterer::server")
+
+      @logger.info("Server: #{opts.inspect}")
     end
 
     def bootstrap(opts={})
@@ -69,6 +73,11 @@ module Caterer
         ui.info "*** Unlocking image: #{i} ***"
         run_action(:unlock, opts.merge({:image => i}))
       end
+    end
+
+    def reboot!
+      ui.info "Rebooting..."
+      ssh.sudo "shutdown -r now", :stream => true
     end
 
     def lock!

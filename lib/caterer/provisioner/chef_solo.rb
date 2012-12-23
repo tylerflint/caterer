@@ -10,10 +10,6 @@ module Caterer
       
       def bootstrap
 
-        if bootstrap_scripts.length == 0
-          server.ui.warn "No bootstrap scripts to execute"
-        end
-
         # validate
         with_bootstrap_scripts do |script, count|
 
@@ -43,6 +39,11 @@ module Caterer
 
         end
 
+      end
+
+      def bootstrapped?
+        res = server.ssh.sudo "command -v chef-solo &>/dev/null"
+        res == 0 ? true : false
       end
 
       def prepare
@@ -138,7 +139,8 @@ module Caterer
         if File.exists? from
           if @server.can_rsync?
             from += "/" if not from.match /\/$/
-            @server.rsync.sync(from, to)        
+            res = @server.rsync.sync(from, to)
+            server.ui.error "rsync was unsuccessful" if res != 0
           else
             server.ui.warn "Rsync unavailable, falling back to scp (slower)..."
             unique = Digest::MD5.hexdigest(from)
@@ -163,7 +165,7 @@ module Caterer
       end
 
       def base_path
-        "/tmp/cater-chef-solo-#{@image}"
+        "/tmp/cater-chef-solo"
       end
 
       def install_path

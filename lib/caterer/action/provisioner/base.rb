@@ -7,7 +7,7 @@ module Caterer
         
         def provisioner(env)
           config = env[:config].images[env[:image]].provisioner
-          "Caterer::Provisioner::#{config.name.to_s.classify}".constantize.new(env[:server], env[:image], config)
+          "Caterer::Provisioner::#{config.name.to_s.classify}".constantize.new(env[:server], config)
         end
 
       end

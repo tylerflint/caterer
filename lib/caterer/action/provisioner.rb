@@ -9,6 +9,7 @@ module Caterer
       autoload :Prepare,    'caterer/action/provisioner/prepare'
       autoload :Provision,  'caterer/action/provisioner/provision'
       autoload :Unlock,     'caterer/action/provisioner/unlock'
+      autoload :Validate,   'caterer/action/provisioner/validate'
     end
   end
 end
