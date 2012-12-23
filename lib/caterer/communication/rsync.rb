@@ -4,6 +4,15 @@ module Caterer
   module Communication
     class Rsync
       
+      class << self
+        
+        def available?
+          `command -v rsync &>/dev/null`
+          $?.exitstatus == 0 ? true : false
+        end
+
+      end
+
       def initialize(server)
         @server = server
         @logger = Log4r::Logger.new("caterer::communication::ssh")

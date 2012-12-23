@@ -95,7 +95,7 @@ module Caterer
     end
 
     def can_rsync?
-      true
+      !Vli::Util::Platform.windows? and Communication::Rsync.available?
     end
 
     def ssh_opts

@@ -140,9 +140,13 @@ module Caterer
             from += "/" if not from.match /\/$/
             @server.rsync.sync(from, to)        
           else
+            server.ui.warn "Rsync unavailable, falling back to scp (slower)..."
             unique = Digest::MD5.hexdigest(from)
+            server.ssh.sudo "rm -rf #{to}/*", :stream => true
+            server.ssh.sudo "mkdir -p #{to}/#{unique}", :stream => true
+            server.ssh.sudo "chown -R #{server.username} #{to}/#{unique}", :stream => true
             server.ssh.upload from, "#{to}/#{unique}"
-            server.ssh.sudo "mv #{to}/#{unique}/* #{to}/", :stream => true
+            server.ssh.sudo "mv #{to}/#{unique}/**/* #{to}/", :stream => true
             server.ssh.sudo "rm -rf #{to}/#{unique}", :stream => true
           end
         end
