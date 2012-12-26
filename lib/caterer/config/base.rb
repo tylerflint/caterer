@@ -3,10 +3,12 @@ module Caterer
     class Base
 
       attr_reader :images, :groups
+      attr_accessor :default_provisioner
 
       def initialize
         @images  = {}
         @groups  = {}
+        @default_provisioner = :chef_solo
       end
 
       def image(name)

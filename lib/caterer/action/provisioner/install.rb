@@ -4,7 +4,7 @@ module Caterer
       class Install < Base
 
         def call(env)
-          provisioner(env).install
+          provisioner(env).install(env[:server])
           @app.call(env)
         end
         

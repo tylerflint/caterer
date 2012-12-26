@@ -6,7 +6,7 @@ module Caterer
 
           def call(env)
 
-            if not provisioner(env).bootstrapped?
+            if not provisioner(env).bootstrapped?(env[:server])
               env[:ui].error "Server not bootstrapped, cannot continue"
               return
             end

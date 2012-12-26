@@ -3,6 +3,7 @@ Caterer.actions.register(:validate) do
   Vli::Action::Builder.new do
     use Caterer::Action::Config::Validate::Image
     use Caterer::Action::Config::Validate::Provisioner
+    use Caterer::Action::Provisioner::Validate::Engine
     use Caterer::Action::Server::Validate::SSH
     use Caterer::Action::Server::Validate::Unlocked
   end

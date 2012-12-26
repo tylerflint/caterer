@@ -1,0 +1,1 @@
+Caterer.provisioners.register(:chef_solo) { Caterer::Provisioner::ChefSolo }

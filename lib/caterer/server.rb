@@ -15,6 +15,7 @@ module Caterer
       @key    = opts[:key]
       @images = opts[:images] || []
       @data   = opts[:data] || {}
+      @engine = opts[:engine]
 
       @logger = Log4r::Logger.new("caterer::server")
 
@@ -22,22 +23,38 @@ module Caterer
     end
 
     def bootstrap(opts={})
-      if @images.length == 0
-        ui.error "image list is empty, nothing to do"
-      end
-      @images.each do |i|
-        ui.info "*** Bootstrapping image: #{i} ***"
-        run_action(:bootstrap, opts.merge({:image => i}))
+      if @images.length > 0
+        @images.each do |i|
+          ui.info "*** Bootstrapping image: #{i} ***"
+          run_action(:bootstrap, opts.merge({:image => i}))
+        end        
+      else
+        ui.info "*** Bootstrapping ***"
+        run_action(:bootstrap, opts.merge({:engine => @engine}))
       end
     end
 
     def provision(opts={})
-      if @images.length == 0
-        ui.error "image list is empty, nothing to do"
+      if @images.length > 0
+        @images.each do |i|
+          ui.info "*** Provisioning image: #{i} ***"
+          run_action(:provision, opts.merge({:image => i}))
+        end
+      else
+        ui.info "*** Provisioning ***"
+        run_action(:provision, opts.merge({:engine => @engine}))
       end
-      @images.each do |i|
-        ui.info "*** Provisioning image: #{i} ***"
-        run_action(:provision, opts.merge({:image => i}))
+    end
+
+    def up(opts={})
+      if @images.length > 0
+        @images.each do |i|
+          ui.info "*** Up'ing image: #{i} ***"
+          run_action(:up, opts.merge({:image => i}))
+        end        
+      else
+        ui.info "*** Up'ing ***"
+        run_action(:up, opts.merge({:engine => @engine}))
       end
     end
 
@@ -45,34 +62,14 @@ module Caterer
       run_action(:reboot, opts)
     end
 
-    def up(opts={})
-      if @images.length == 0
-        ui.error "image list is empty, nothing to do"
-      end
-      @images.each do |i|
-        ui.info "*** Up'ing image: #{i} ***"
-        run_action(:up, opts.merge({:image => i}))
-      end
-    end
-
     def lock(opts={})
-      if @images.length == 0
-        ui.error "image list is empty, nothing to do"
-      end
-      @images.each do |i|
-        ui.info "*** Locking image: #{i} ***"
-        run_action(:lock, opts.merge({:image => i}))
-      end
+      ui.info "*** Locking ***"
+      run_action(:lock, opts)
     end
 
     def unlock(opts={})
-      if @images.length == 0
-        ui.error "image list is empty, nothing to do"
-      end
-      @images.each do |i|
-        ui.info "*** Unlocking image: #{i} ***"
-        run_action(:unlock, opts.merge({:image => i}))
-      end
+      ui.info "*** Unlocking ***"
+      run_action(:unlock, opts)
     end
 
     def reboot!
@@ -112,7 +109,7 @@ module Caterer
         opts[:paranoid] = false
         opts[:port]     = port
         opts[:password] = password if password
-        opts[:keys]     = ["#{@key}"] if @key
+        opts[:keys]     = [].tap {|keys| keys << @key if @key }
       end
     end
 
@@ -158,6 +155,26 @@ module Caterer
       }.merge(options || {})
 
       env.action_runner.run(name, options)
+    end
+
+    def upload_directory(from, to)
+      if File.exists? from
+        if can_rsync?
+          from += "/" if not from.match /\/$/
+          res = rsync.sync(from, to)
+          ui.error "rsync was unsuccessful" if res != 0
+        else
+          # yuck. Heaven help the poor soul who hath not rsync...
+          ui.warn "Rsync unavailable, falling back to scp (slower)..."
+          unique = Digest::MD5.hexdigest(from)
+          ssh.sudo "rm -rf #{to}/*", :stream => true
+          ssh.sudo "mkdir -p #{to}/#{unique}", :stream => true
+          ssh.sudo "chown -R #{username} #{to}/#{unique}", :stream => true
+          ssh.upload from, "#{to}/#{unique}"
+          ssh.sudo "mv #{to}/#{unique}/**/* #{to}/", :stream => true
+          ssh.sudo "rm -rf #{to}/#{unique}", :stream => true
+        end
+      end
     end
 
     protected

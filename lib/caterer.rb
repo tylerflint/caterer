@@ -23,6 +23,10 @@ module Caterer
     @commands ||= Vli::Registry.new
   end
 
+  def provisioners
+    @provisioners ||= Vli::Registry.new
+  end
+
   def config
     @config ||= Config::Base.new
   end
@@ -35,3 +39,4 @@ end
 
 require 'caterer/commands'
 require 'caterer/actions'
+require 'caterer/provisioners'

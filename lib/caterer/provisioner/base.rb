@@ -2,19 +2,16 @@ module Caterer
   module Provisioner
     class Base
 
-      attr_reader :server, :config
+      # config dsl
+      def errors; end
 
-      def initialize(server, config=nil)
-        @server = server
-        @config = config
-      end
-
-      def bootstrap; end
-      def bootstrapped?; true; end
-      def cleanup; end
-      def install; end
-      def prepare; end
-      def provision; end
+      # provision dsl
+      def bootstrap(server); end
+      def bootstrapped?(server); true; end
+      def cleanup(server); end
+      def install(server); end
+      def prepare(server); end
+      def provision(server); end
 
     end
   end

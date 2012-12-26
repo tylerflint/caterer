@@ -1,5 +1,3 @@
-require 'active_support/inflector'
-
 module Caterer
   module Config
     class Image
@@ -11,7 +9,9 @@ module Caterer
       end
 
       def provision(type)
-        @provisioner = "Caterer::Config::Provision::#{type.to_s.classify}".constantize.new(type)
+        provisioner_klass = Caterer.provisioners.get(type)
+        raise ":#{type} is not a valida provisioner" if not provisioner_klass
+        @provisioner = provisioner_klass.new
         yield @provisioner if block_given?
       end
 

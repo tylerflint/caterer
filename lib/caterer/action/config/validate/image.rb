@@ -5,12 +5,15 @@ module Caterer
         class Image < Base
 
           def call(env)
-            # check to ensure the image exists
-            image = env[:config].images[env[:image]]
 
-            if not image
-              env[:ui].error "image ':#{env[:image]}' is not defined"
-              return
+            if env[:image]
+              # check to ensure the image exists
+              image = env[:config].images[env[:image]]
+
+              if not image
+                env[:ui].error "image ':#{env[:image]}' is not defined"
+                return
+              end              
             end
 
             @app.call(env)

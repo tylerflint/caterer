@@ -60,7 +60,7 @@ module Caterer
           argv.first.split(",").each do |host|
             
             if group = @env.config.groups[host.to_sym]
-              group.members.each do |member|
+              group.members.each do |key, member|
                 servers << init_server(group, member, options)
               end
             else
@@ -98,6 +98,10 @@ module Caterer
         opts[:port]   = options[:port] || member.port
         opts[:images] = image_list(options) || member.images || group.images
         opts[:key]    = options[:key] || member.key || group.key
+
+        if engine = options[:engine]
+          opts[:engine] = engine.to_sym
+        end
 
         opts[:data] = begin
           data = nil

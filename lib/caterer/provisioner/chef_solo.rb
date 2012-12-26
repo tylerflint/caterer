@@ -8,7 +8,76 @@ module Caterer
   module Provisioner
     class ChefSolo < Base
       
-      def bootstrap
+      attr_reader :run_list
+      attr_accessor :json, :cookbooks_path, :roles_path
+      attr_accessor :data_bags_path, :bootstrap_scripts
+
+      def initialize
+        @run_list          = []
+        @json              = {}
+        @cookbooks_path    = ['cookbooks']
+        @roles_path        = ['roles']
+        @data_bags_path    = ['data_bags']
+        @bootstrap_scripts = []
+      end
+
+      # config DSL
+
+      def add_recipe(recipe)
+        @run_list << "recipe[#{recipe}]"
+      end
+
+      def add_role(role)
+        @run_list << "role[#{role}]"
+      end
+
+      # I don't like this at all, but it seems to make the best Caterfile workflow
+      def add_image(image)
+        image = Caterer.config.images[image]
+        raise "Unknown image :#{image}" if not image
+
+        provisioner = image.provisioner
+        raise "No provisioner for :#{image}" if not provisioner
+
+        if not provisioner.class == self.class
+          raise "add_image incompatibility: #{provisioner.class} != #{self.class}"
+        end
+
+        @run_list += provisioner.run_list
+        @bootstrap_scripts += provisioner.bootstrap_scripts
+      end
+
+      def add_bootstrap(script)
+        @bootstrap_scripts << script
+      end
+
+      def errors
+        errors = {}
+
+        if not @run_list.length > 0
+          errors[:run_list] = "is empty"
+        end
+
+        if not @cookbooks_path.is_a? Array
+          errors[:cookbooks_path] = "must be an array"
+        end
+
+        if not @roles_path.is_a? Array
+          errors[:roles_path] = "must be an array"
+        end
+
+        if not @data_bags_path.is_a? Array
+          errors[:data_bags_path] = "must be an array"
+        end
+
+        if errors.length > 0
+          errors
+        end
+      end
+
+      # provision engine
+
+      def bootstrap(server)
 
         # validate
         with_bootstrap_scripts do |script, count|
@@ -24,10 +93,10 @@ module Caterer
         with_bootstrap_scripts do |script, count|
 
           server.ui.info "Uploading #{script}..."
-          server.ssh.upload script, "#{bootstrap_path}-#{count}"
+          server.ssh.upload script, "#{target_bootstrap_path}-#{count}"
 
-          server.ssh.sudo "chown #{server.username} #{bootstrap_path}-#{count}", :stream => true
-          server.ssh.sudo "chmod +x #{bootstrap_path}-#{count}", :stream => true
+          server.ssh.sudo "chown #{server.username} #{target_bootstrap_path}-#{count}", :stream => true
+          server.ssh.sudo "chmod +x #{target_bootstrap_path}-#{count}", :stream => true
 
         end
 
@@ -35,189 +104,162 @@ module Caterer
         with_bootstrap_scripts do |script, count|
 
           server.ui.info "Running #{script}..."
-          server.ssh.sudo "#{bootstrap_path}-#{count}", :stream => true
+          server.ssh.sudo "#{target_bootstrap_path}-#{count}", :stream => true
 
         end
 
       end
 
-      def bootstrapped?
+      def bootstrapped?(server)
         res = server.ssh.sudo "command -v chef-solo &>/dev/null"
         res == 0 ? true : false
       end
 
-      def prepare
+      def prepare(server)
         # create base dir
-        server.ssh.sudo "mkdir -p #{base_path}", :stream => true
-        server.ssh.sudo "chown -R #{server.username} #{base_path}", :stream => true
+        server.ssh.sudo "mkdir -p #{target_base_path}", :stream => true
+        server.ssh.sudo "chown -R #{server.username} #{target_base_path}", :stream => true
       end
 
-      def install
+      def install(server)
         server.ui.info "Preparing installation..."
 
         # upload
-        server.ssh.upload install_script, "#{install_path}"
+        server.ssh.upload install_script, "#{target_install_path}"
 
         # set permissions
-        server.ssh.sudo "chown #{server.username} #{install_path}", :stream => true
-        server.ssh.sudo "chmod +x #{install_path}", :stream => true
+        server.ssh.sudo "chown #{server.username} #{target_install_path}", :stream => true
+        server.ssh.sudo "chmod +x #{target_install_path}", :stream => true
 
         # run
         server.ui.info "Installing chef-solo..."
-        server.ssh.sudo "#{install_path}", :stream => true
+        server.ssh.sudo "#{target_install_path}", :stream => true
       end
 
-      def provision
+      def provision(server)
 
         # create cookbooks directory
-        server.ssh.sudo "mkdir -p #{cookbooks_path}", :stream => true
-        server.ssh.sudo "chown -R #{server.username} #{cookbooks_path}", :stream => true
+        server.ssh.sudo "mkdir -p #{target_cookbooks_path}", :stream => true
+        server.ssh.sudo "chown -R #{server.username} #{target_cookbooks_path}", :stream => true
 
         # sync cookbooks
         server.ui.info "Syncing cookbooks..."
-        config.cookbooks_path.each do |path|
-          upload_directory path, "#{cookbooks_path}/#{Digest::MD5.hexdigest(path)}"
+        cookbooks_path.each do |path|
+          server.upload_directory path, "#{target_cookbooks_path}/#{Digest::MD5.hexdigest(path)}"
         end
 
         # create roles directory
-        server.ssh.sudo "mkdir -p #{roles_path}", :stream => true
-        server.ssh.sudo "chown -R #{server.username} #{roles_path}", :stream => true
+        server.ssh.sudo "mkdir -p #{target_roles_path}", :stream => true
+        server.ssh.sudo "chown -R #{server.username} #{target_roles_path}", :stream => true
 
         # sync roles
         server.ui.info "Syncing roles..."
-        config.roles_path.each do |path|
-          upload_directory path, roles_path
+        roles_path.each do |path|
+          server.upload_directory path, target_roles_path
         end
 
         # create data_bags directory
-        server.ssh.sudo "mkdir -p #{data_bags_path}", :stream => true
-        server.ssh.sudo "chown -R #{server.username} #{data_bags_path}", :stream => true
+        server.ssh.sudo "mkdir -p #{target_data_bags_path}", :stream => true
+        server.ssh.sudo "chown -R #{server.username} #{target_data_bags_path}", :stream => true
 
         # sync databags
         server.ui.info "Syncing data bags..."
-        config.data_bags_path.each do |path|
-          upload_directory path, data_bags_path
+        data_bags_path.each do |path|
+          server.upload_directory path, target_data_bags_path
         end
 
         # create solo.rb
         server.ui.info "Generating solo.rb..."
-        server.ssh.upload(StringIO.new(solo_content), solo_path)
+        server.ssh.upload(StringIO.new(solo_content(server)), target_solo_path)
 
         # create json
         server.ui.info "Generating json config..."
-        server.ssh.upload(StringIO.new(json_config), json_config_path)
+        server.ssh.upload(StringIO.new(json_config(config_data.merge(server.data))), target_json_config_path)
 
         # set permissions on everything
-        server.ssh.sudo "chown -R #{server.username} #{base_path}", :stream => true
+        server.ssh.sudo "chown -R #{server.username} #{target_base_path}", :stream => true
 
         # run
         server.ui.info "Running chef-solo..."
         server.ssh.sudo command_string, :stream => true
       end
 
-      def cleanup
+      def cleanup(server)
         server.ui.info "Cleaning up..."
 
         # installer
-        server.ssh.sudo "rm -f #{install_path}", :stream => true
+        server.ssh.sudo "rm -f #{target_install_path}", :stream => true
 
         # bootstrap scripts
-        server.ssh.sudo "rm -f #{bootstrap_path}*", :stream => true
+        server.ssh.sudo "rm -f #{target_bootstrap_path}*", :stream => true
 
         # solo.rb
-        server.ssh.sudo "rm -f #{solo_path}", :stream => true
+        server.ssh.sudo "rm -f #{target_solo_path}", :stream => true
 
         # json
-        server.ssh.sudo "rm -f #{json_config_path}", :stream => true
+        server.ssh.sudo "rm -f #{target_json_config_path}", :stream => true
 
         # for now, leave cookbooks, roles, and data bags for faster provisioning
       end
 
       protected
 
-      def upload_directory(from, to)
-        if File.exists? from
-          if @server.can_rsync?
-            from += "/" if not from.match /\/$/
-            res = @server.rsync.sync(from, to)
-            server.ui.error "rsync was unsuccessful" if res != 0
-          else
-            server.ui.warn "Rsync unavailable, falling back to scp (slower)..."
-            unique = Digest::MD5.hexdigest(from)
-            server.ssh.sudo "rm -rf #{to}/*", :stream => true
-            server.ssh.sudo "mkdir -p #{to}/#{unique}", :stream => true
-            server.ssh.sudo "chown -R #{server.username} #{to}/#{unique}", :stream => true
-            server.ssh.upload from, "#{to}/#{unique}"
-            server.ssh.sudo "mv #{to}/#{unique}/**/* #{to}/", :stream => true
-            server.ssh.sudo "rm -rf #{to}/#{unique}", :stream => true
-          end
-        end
-      end
-
       def with_bootstrap_scripts
-        config.bootstrap_scripts.each_with_index do |script, index|
+        bootstrap_scripts.each_with_index do |script, index|
           yield script, index if block_given?
         end
       end
 
-      def bootstrap_scripts
-        config.bootstrap_scripts
-      end
-
-      def base_path
+      def target_base_path
         "/tmp/cater-chef-solo"
       end
 
-      def install_path
-        "#{base_path}/install"
+      def target_install_path
+        "#{target_base_path}/install"
       end
 
-      def bootstrap_path
-        "#{base_path}/bootstrap"
+      def target_bootstrap_path
+        "#{target_base_path}/bootstrap"
       end
 
-      def cookbooks_path
-        "#{base_path}/cookbooks"
+      def target_cookbooks_path
+        "#{target_base_path}/cookbooks"
       end
 
-      def roles_path
-        "#{base_path}/roles"
+      def target_roles_path
+        "#{target_base_path}/roles"
       end
 
-      def data_bags_path
-        "#{base_path}/data_bags"
+      def target_data_bags_path
+        "#{target_base_path}/data_bags"
       end
 
-      def solo_path
-        "#{base_path}/solo.rb"
+      def target_solo_path
+        "#{target_base_path}/solo.rb"
       end
 
-      def json_config_path
-        "#{base_path}/config.json"
-      end
-
-      def config_bootstrap
-        config.bootstrap_script
+      def target_json_config_path
+        "#{target_base_path}/config.json"
       end
 
       def install_script
         File.expand_path("../../../templates/provisioner/chef_solo/bootstrap.sh", __FILE__)
       end
 
-      def solo_content
-        Tilt.new(File.expand_path('../../../templates/provisioner/chef_solo/solo.erb', __FILE__)).render(self)
+      def solo_content(server)
+        Tilt.new(File.expand_path('../../../templates/provisioner/chef_solo/solo.erb', __FILE__)).render(self, {:server => server})
       end
 
-      def json_config
-        MultiJson.dump(config_data)
+      def json_config(data)
+        MultiJson.dump(data)
       end
 
       def config_data
-        {:run_list => config.run_list}.merge(config.json).merge(server.data)
+        {:run_list => run_list}.merge(json)
       end
 
       def command_string
-        "chef-solo -c #{solo_path} -j #{json_config_path}"
+        "chef-solo -c #{target_solo_path} -j #{target_json_config_path}"
       end
 
     end
