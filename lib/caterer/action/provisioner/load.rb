@@ -1,9 +1,16 @@
 module Caterer
   module Action
     module Provisioner
-      class Base < Action::Base
-        
-        def provisioner(env)
+      class Load < Base
+
+        def call(env)
+
+          env[:provisioner] = load_provisioner(env)
+
+          @app.call(env)
+        end
+
+        def load_provisioner(env)
 
           if image = env[:image]
             env[:config].images[image].provisioner
@@ -16,7 +23,7 @@ module Caterer
           Caterer.config.default_provisioner
         end
 
-      end
+      end     
     end
   end
 end

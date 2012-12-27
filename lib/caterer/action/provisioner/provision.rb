@@ -4,7 +4,7 @@ module Caterer
       class Provision < Base
 
         def call(env)
-          provisioner(env).provision(env[:server])
+          env[:provisioner].provision(env[:server])
           @app.call(env)
         end
         
