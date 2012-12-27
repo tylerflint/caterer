@@ -57,10 +57,10 @@ install_curl() {
   echo "installing curl..."
   case "$(detect_platform)" in
     "ubuntu" )
-      apt-get -y install curl
+      apt-get -y --force-yes install curl
       ;;
     "debian" )
-      apt-get -y install curl
+      apt-get -y --force-yes install curl
       ;;
     "el" )
       yum -y install curl
