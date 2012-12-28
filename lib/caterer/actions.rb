@@ -56,6 +56,7 @@ Caterer.actions.register(:up) do
     use Caterer::Action::Provisioner::Prepare
     use Caterer::Action::Server::Lock
     use Caterer::Action::Provisioner::Bootstrap
+    use Caterer::Action::Provisioner::Install
     use Caterer::Action::Provisioner::Provision
     use Caterer::Action::Provisioner::Cleanup
     use Caterer::Action::Server::Unlock
