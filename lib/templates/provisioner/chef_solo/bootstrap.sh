@@ -81,7 +81,37 @@ install_curl() {
   esac
 }
 
+install_rsync() {
+  echo "installing rsync..."
+  case "$(detect_platform)" in
+    "ubuntu" )
+      apt-get -y --force-yes install rsync
+      ;;
+    "debian" )
+      apt-get -y --force-yes install rsync
+      ;;
+    "el" )
+      yum -y install rsync
+      ;;
+    "fedora" )
+      yum -y install rsync
+      ;;
+    "suse" )
+      yast -i rsync
+      ;;
+    "sles" )
+      yast -i rsync
+      ;;
+    *)
+      echo "sorry, I don't have a bootstrap for this platform"
+      exit 1
+      ;;
+  esac
+}
+
 exists curl || install_curl
+
+exists rsync || install_rsync
 
 # install chef-solo
 exists chef-solo || curl -L https://www.opscode.com/chef/install.sh | bash
