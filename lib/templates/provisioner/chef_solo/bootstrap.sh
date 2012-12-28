@@ -53,26 +53,26 @@ detect_platform() {
   echo $platform
 }
 
-install_curl() {
-  echo "installing curl..."
+install() {
+  echo "installing $1..."
   case "$(detect_platform)" in
     "ubuntu" )
-      apt-get -y --force-yes install curl
+      apt-get -y --force-yes install $1
       ;;
     "debian" )
-      apt-get -y --force-yes install curl
+      apt-get -y --force-yes install $1
       ;;
     "el" )
-      yum -y install curl
+      yum -y install $1
       ;;
     "fedora" )
-      yum -y install curl
+      yum -y install $1
       ;;
     "suse" )
-      yast -i curl
+      yast -i $1
       ;;
     "sles" )
-      yast -i curl
+      yast -i $1
       ;;
     *)
       echo "sorry, I don't have a bootstrap for this platform"
@@ -81,37 +81,9 @@ install_curl() {
   esac
 }
 
-install_rsync() {
-  echo "installing rsync..."
-  case "$(detect_platform)" in
-    "ubuntu" )
-      apt-get -y --force-yes install rsync
-      ;;
-    "debian" )
-      apt-get -y --force-yes install rsync
-      ;;
-    "el" )
-      yum -y install rsync
-      ;;
-    "fedora" )
-      yum -y install rsync
-      ;;
-    "suse" )
-      yast -i rsync
-      ;;
-    "sles" )
-      yast -i rsync
-      ;;
-    *)
-      echo "sorry, I don't have a bootstrap for this platform"
-      exit 1
-      ;;
-  esac
-}
+exists curl || install curl
 
-exists curl || install_curl
-
-exists rsync || install_rsync
+exists rsync || install rsync
 
 # install chef-solo
 exists chef-solo || curl -L https://www.opscode.com/chef/install.sh | bash
