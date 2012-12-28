@@ -54,7 +54,6 @@ Caterer.actions.register(:up) do
     use Caterer.actions.get(:validate)
     use Caterer::Action::Provisioner::Load
     use Caterer::Action::Provisioner::Prepare
-    use Caterer::Action::Provisioner::Validate::Bootstrapped
     use Caterer::Action::Server::Lock
     use Caterer::Action::Provisioner::Bootstrap
     use Caterer::Action::Provisioner::Provision
