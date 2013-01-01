@@ -12,7 +12,8 @@ module Caterer
       def install(server); end
       def prepare(server); end
       def provision(server); end
-
+      def uninstall(server); end
+        
     end
   end
 end

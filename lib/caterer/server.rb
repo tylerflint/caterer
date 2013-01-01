@@ -72,6 +72,11 @@ module Caterer
       run_action(:unlock, opts)
     end
 
+    def clean(opts={})
+      ui.info "*** Cleaning ***"
+      run_action(:clean, opts)
+    end
+
     def reboot!
       ui.info "Rebooting..."
       ssh.sudo "shutdown -r now", :stream => true

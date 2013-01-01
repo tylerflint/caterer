@@ -33,9 +33,14 @@ module Caterer
       @action_runner ||= Vli::Action::Runner.new(action_registry) do
         {
           :action_runner  => action_runner,
-          :ui             => @ui
+          :ui             => @ui,
+          :uuid           => uuid
         }
       end
+    end
+
+    def uuid
+      @uuid ||= Digest::MD5.hexdigest(@cwd.to_s)
     end
 
     def action_registry

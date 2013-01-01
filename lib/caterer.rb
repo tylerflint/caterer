@@ -4,6 +4,7 @@ require 'caterer/logger'
 
 module Caterer
   autoload :Action,         'caterer/action'
+  autoload :Berkshelf,      'caterer/berkshelf'
   autoload :Cli,            'caterer/cli'
   autoload :Command,        'caterer/command'
   autoload :Communication,  'caterer/communication'
@@ -25,6 +26,10 @@ module Caterer
 
   def provisioners
     @provisioners ||= Vli::Registry.new
+  end
+
+  def config_keys
+    @config_keys  ||= Vli::Registry.new
   end
 
   def config

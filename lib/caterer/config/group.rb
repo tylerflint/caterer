@@ -18,6 +18,7 @@ module Caterer
       def member(name)
         @members[name] ||= Member.new(name)
         yield @members[name] if block_given?
+        @members[name]
       end
     end
   end

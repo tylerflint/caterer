@@ -13,6 +13,7 @@ module Caterer
         raise ":#{type} is not a valida provisioner" if not provisioner_klass
         @provisioner = provisioner_klass.new
         yield @provisioner if block_given?
+        @provisioner
       end
 
     end

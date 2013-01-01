@@ -1,6 +1,7 @@
 module Caterer
   module Command
     autoload :Base,       'caterer/command/base'
+    autoload :Clean,      'caterer/command/clean'
     autoload :Bootstrap,  'caterer/command/bootstrap'
     autoload :Lock,       'caterer/command/lock'
     autoload :Provision,  'caterer/command/provision'

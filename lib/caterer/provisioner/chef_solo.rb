@@ -202,6 +202,12 @@ module Caterer
         # for now, leave cookbooks, roles, and data bags for faster provisioning
       end
 
+      def uninstall(server)
+        server.ui.info "Uninstalling..."
+
+        server.ssh.sudo "rm -rf #{target_base_path}", :stream => true
+      end
+
       protected
 
       def with_bootstrap_scripts
@@ -256,6 +262,16 @@ module Caterer
 
       def config_data
         {:run_list => run_list}.merge(json)
+      end
+
+      def final_cookbook_paths
+        cookbooks_path.inject([]) do |res, path|
+          # make sure they actually contain recipes, otherwise chef-solo will freak
+          if Dir.entries(path).length > 2
+            res << "#{target_cookbooks_path}/#{Digest::MD5.hexdigest(path)}"
+          end
+          res
+        end
       end
 
       def command_string

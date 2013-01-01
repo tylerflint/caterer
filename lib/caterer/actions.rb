@@ -69,3 +69,11 @@ Caterer.actions.register(:reboot) do
     use Caterer::Action::Server::Reboot
   end
 end
+
+Caterer.actions.register(:clean) do
+  Vli::Action::Builder.new do
+    use Caterer.actions.get(:validate)
+    use Caterer::Action::Provisioner::Load
+    use Caterer::Action::Provisioner::Uninstall
+  end
+end
