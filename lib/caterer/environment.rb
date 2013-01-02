@@ -1,4 +1,5 @@
 require 'pathname'
+require 'digest'
 
 module Caterer
   class Environment
