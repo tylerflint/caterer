@@ -40,7 +40,7 @@ module Caterer
     end
 
     def uuid
-      @uuid ||= Digest::MD5.hexdigest(@cwd.to_s)
+      @uuid ||= ::Digest::MD5.hexdigest(@cwd.to_s)
     end
 
     def action_registry
