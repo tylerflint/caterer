@@ -114,7 +114,7 @@ module Caterer
         opts[:paranoid] = false
         opts[:port]     = port
         opts[:password] = password if password
-        opts[:keys]     = [].tap {|keys| keys << @key if @key }
+        opts[:keys]     = [].tap {|keys| keys << key if key }
       end
     end
 
@@ -144,6 +144,10 @@ module Caterer
 
     def port
       @port || 22
+    end
+
+    def key
+      @key
     end
 
     def data

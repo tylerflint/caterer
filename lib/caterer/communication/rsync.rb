@@ -4,6 +4,8 @@ module Caterer
   module Communication
     class Rsync
       
+      attr_reader :server
+
       class << self
         
         def available?
@@ -26,7 +28,7 @@ module Caterer
             begin
               out = stdout.readpartial(4096)
               if out.match /password:/
-                stdin.puts @server.password
+                stdin.puts server.password
               else
                 @logger.debug("stdout: #{out}")
               end
@@ -43,7 +45,14 @@ module Caterer
       protected
 
       def rsync_cmd(from, to)
-        "rsync -zr -e 'ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -p #{@server.port}' --delete #{from} #{@server.username}@#{@server.host}:#{to}"
+        "rsync -zr -e '#{ssh_cmd}' --delete #{from} #{server.username}@#{server.host}:#{to}"
+      end
+
+      def ssh_cmd
+        cmd = "ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no"
+        cmd += " -i #{server.key}" unless server.key.nil?
+        cmd += " -p #{server.port}" unless server.port == 22
+        cmd
       end
 
     end
