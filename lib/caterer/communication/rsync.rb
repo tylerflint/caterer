@@ -32,7 +32,7 @@ module Caterer
               else
                 @logger.debug("stdout: #{out}")
               end
-            rescue EOFError
+            rescue EOFError, Errno::EIO
               eof = true
             end
           end
