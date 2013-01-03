@@ -97,7 +97,7 @@ module Caterer
           Timeout::Error
         ]
 
-        @logger.info("Connecting to SSH: (#{@server.host}:#{@server.port}")
+        @logger.info("Connecting to SSH: (#{@server.username}@#{@server.host}:#{@server.port} - #{@server.ssh_opts.inspect})")
         @server.ui.info "Connecting..."
         connection = retryable(:tries => 10, :on => exceptions) do
           Net::SSH.start(@server.host, @server.username, @server.ssh_opts)
