@@ -107,11 +107,11 @@ module Caterer
 
           data = group.data.merge(member.data)
 
-          if json = options[:data]
-            loaded = MultiJson.load json, :symbolize_keys => true rescue nil
-            data.merge(loaded) if loaded and loaded.is_a? Hash
+          if options[:data]
+            json = MultiJson.load options[:data], :symbolize_keys => true rescue nil
+            data = data.merge(json) if json and json.is_a? Hash
           end
-          
+
           data
         end
 
