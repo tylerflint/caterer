@@ -9,6 +9,7 @@ module Caterer
         @name    = name
         @images  = []
         @members = {}
+        @data    = {}
       end
 
       def add_image(image)

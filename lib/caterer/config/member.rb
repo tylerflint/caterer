@@ -7,6 +7,7 @@ module Caterer
       
       def initialize(name=nil)
         @name = name
+        @data = {}
       end
 
     end

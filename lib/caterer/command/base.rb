@@ -104,11 +104,14 @@ module Caterer
         end
 
         opts[:data] = begin
-          data = nil
+
+          data = group.data.merge(member.data)
+
           if json = options[:data]
-            data = MultiJson.load json, :symbolize_keys => true rescue nil
+            data = data.merge(MultiJson.load(json, :symbolize_keys => true) rescue {})
           end
-          data || member.data || group.data
+
+          data
         end
 
         Server.new(@env, opts)
