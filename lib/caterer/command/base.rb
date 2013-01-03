@@ -108,9 +108,10 @@ module Caterer
           data = group.data.merge(member.data)
 
           if json = options[:data]
-            data = data.merge(MultiJson.load(json, :symbolize_keys => true) rescue {})
+            loaded = MultiJson.load json, :symbolize_keys => true rescue nil
+            data.merge(loaded) if loaded and loaded.is_a? Hash
           end
-
+          
           data
         end
 
