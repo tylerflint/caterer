@@ -1,4 +1,5 @@
 require 'etc'
+require 'digest'
 
 module Caterer
   class Server
@@ -51,7 +52,7 @@ module Caterer
         @images.each do |i|
           ui.info "*** Up'ing image: #{i} ***"
           run_action(:up, opts.merge({:image => i}))
-        end        
+        end
       else
         ui.info "*** Up'ing ***"
         run_action(:up, opts.merge({:engine => @engine}))
@@ -179,7 +180,7 @@ module Caterer
         else
           # yuck. Heaven help the poor soul who hath not rsync...
           ui.warn "Rsync unavailable, falling back to scp (slower)..."
-          unique = Digest::MD5.hexdigest(from)
+          unique = ::Digest::MD5.hexdigest(from)
           ssh.sudo "rm -rf #{to}/*", :stream => true
           ssh.sudo "mkdir -p #{to}/#{unique}", :stream => true
           ssh.sudo "chown -R #{username} #{to}/#{unique}", :stream => true

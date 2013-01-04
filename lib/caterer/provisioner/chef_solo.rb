@@ -104,7 +104,11 @@ module Caterer
         with_bootstrap_scripts do |script, count|
 
           server.ui.info "Running #{script}..."
-          server.ssh.sudo "#{target_bootstrap_path}-#{count}", :stream => true
+          res = server.ssh.sudo "#{target_bootstrap_path}-#{count}", :stream => true
+
+          unless res == 0
+            server.ui.error "#{script} failed with exit code: #{res}"
+          end
 
         end
 
@@ -133,7 +137,11 @@ module Caterer
 
         # run
         server.ui.info "Installing chef-solo..."
-        server.ssh.sudo "#{target_install_path}", :stream => true
+        res = server.ssh.sudo "#{target_install_path}", :stream => true
+
+        unless res == 0
+          server.ui.error "install failed with exit code: #{res}"
+        end
       end
 
       def provision(server)
@@ -181,7 +189,10 @@ module Caterer
 
         # run
         server.ui.info "Running chef-solo..."
-        server.ssh.sudo command_string, :stream => true
+        res = server.ssh.sudo command_string, :stream => true
+        unless res == 0
+          server.ui.error "chef-solo failed with exit code: #{res}"
+        end
       end
 
       def cleanup(server)
