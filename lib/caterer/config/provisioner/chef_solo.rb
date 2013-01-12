@@ -8,7 +8,7 @@ module Caterer
           @dest_dir          = '/opt/cater_chef_solo'
           @run_list          = []
           @json              = {}
-          @cookbooks_path    = ['cookbooks', 'vendor/cookbooks']
+          @cookbooks_path    = ['cookbooks']
           @roles_path        = ['roles']
           @data_bags_path    = ['data_bags']
           @bootstrap_scripts = []
