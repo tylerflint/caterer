@@ -9,7 +9,6 @@ module Caterer
         @images = {}
         @groups = {}
         @keys   = {}
-        @default_provisioner = :chef_solo
       end
 
       def image(name)
@@ -46,3 +45,5 @@ module Caterer
     end
   end
 end
+
+Caterer.config_keys.register(:provisioner) { Caterer::Config::Provisioner::Base }

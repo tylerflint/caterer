@@ -9,16 +9,17 @@ module Caterer
     class ChefSolo < Base
       
       attr_reader :run_list
-      attr_accessor :json, :cookbooks_path, :roles_path
+      attr_accessor :dest_dir, :json, :cookbooks_path, :roles_path
       attr_accessor :data_bags_path, :bootstrap_scripts
 
       def initialize
-        @run_list          = []
-        @json              = {}
-        @cookbooks_path    = ['cookbooks']
-        @roles_path        = ['roles']
-        @data_bags_path    = ['data_bags']
-        @bootstrap_scripts = []
+        @dest_dir          = config.dest_dir
+        @run_list          = config.run_list
+        @json              = config.json
+        @cookbooks_path    = config.cookbooks_path
+        @roles_path        = config.roles_path
+        @data_bags_path    = config.data_bags_path
+        @bootstrap_scripts = config.bootstrap_scripts
       end
 
       # config DSL
@@ -121,8 +122,8 @@ module Caterer
 
       def prepare(server)
         # create base dir
-        server.ssh.sudo "mkdir -p #{target_base_path}", :stream => true
-        server.ssh.sudo "chown -R #{server.username} #{target_base_path}", :stream => true
+        server.ssh.sudo "mkdir -p #{dest_dir}", :stream => true
+        server.ssh.sudo "chown -R #{server.username} #{dest_dir}", :stream => true
       end
 
       def install(server)
@@ -185,7 +186,7 @@ module Caterer
         server.ssh.upload(StringIO.new(json_config(config_data.merge(server.data))), target_json_config_path)
 
         # set permissions on everything
-        server.ssh.sudo "chown -R #{server.username} #{target_base_path}", :stream => true
+        server.ssh.sudo "chown -R #{server.username} #{dest_dir}", :stream => true
 
         # run
         server.ui.info "Running chef-solo..."
@@ -216,10 +217,14 @@ module Caterer
       def uninstall(server)
         server.ui.info "Uninstalling..."
 
-        server.ssh.sudo "rm -rf #{target_base_path}", :stream => true
+        server.ssh.sudo "rm -rf #{dest_dir}", :stream => true
       end
 
       protected
+
+      def config
+        @config ||= Caterer.config.provisioner.chef_solo
+      end
 
       def with_bootstrap_scripts
         bootstrap_scripts.each_with_index do |script, index|
@@ -227,36 +232,32 @@ module Caterer
         end
       end
 
-      def target_base_path
-        "/tmp/cater-chef-solo"
-      end
-
       def target_install_path
-        "#{target_base_path}/install"
+        "#{dest_dir}/install"
       end
 
       def target_bootstrap_path
-        "#{target_base_path}/bootstrap"
+        "#{dest_dir}/bootstrap"
       end
 
       def target_cookbooks_path
-        "#{target_base_path}/cookbooks"
+        "#{dest_dir}/cookbooks"
       end
 
       def target_roles_path
-        "#{target_base_path}/roles"
+        "#{dest_dir}/roles"
       end
 
       def target_data_bags_path
-        "#{target_base_path}/data_bags"
+        "#{dest_dir}/data_bags"
       end
 
       def target_solo_path
-        "#{target_base_path}/solo.rb"
+        "#{dest_dir}/solo.rb"
       end
 
       def target_json_config_path
-        "#{target_base_path}/config.json"
+        "#{dest_dir}/config.json"
       end
 
       def install_script

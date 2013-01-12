@@ -1,3 +1,5 @@
 Caterer.configure do |config|
-  # nothing to see here... yet
+
+  config.provisioner.default_engine = :chef_solo
+
 end

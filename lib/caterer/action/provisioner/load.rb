@@ -20,7 +20,7 @@ module Caterer
         end
 
         def default_engine
-          Caterer.config.default_provisioner
+          Caterer.config.provisioner.default_engine
         end
 
       end     
