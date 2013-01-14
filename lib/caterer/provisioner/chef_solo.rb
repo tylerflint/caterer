@@ -13,13 +13,13 @@ module Caterer
       attr_accessor :data_bags_path, :bootstrap_scripts
 
       def initialize
-        @dest_dir          = config.dest_dir
-        @run_list          = config.run_list
-        @json              = config.json
-        @cookbooks_path    = config.cookbooks_path
-        @roles_path        = config.roles_path
-        @data_bags_path    = config.data_bags_path
-        @bootstrap_scripts = config.bootstrap_scripts
+        @dest_dir          = config.dest_dir.dup
+        @run_list          = config.run_list.dup
+        @json              = config.json.dup
+        @cookbooks_path    = config.cookbooks_path.dup
+        @roles_path        = config.roles_path.dup
+        @data_bags_path    = config.data_bags_path.dup
+        @bootstrap_scripts = config.bootstrap_scripts.dup
       end
 
       # config DSL
