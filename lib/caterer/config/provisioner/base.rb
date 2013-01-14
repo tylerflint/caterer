@@ -10,6 +10,8 @@ module Caterer
 
         def chef_solo
           @keys[:chef_solo] ||= Config::Provisioner::ChefSolo.new
+          yield @keys[:chef_solo] if block_given?
+          @keys[:chef_solo]
         end
 
       end

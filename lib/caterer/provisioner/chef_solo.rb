@@ -279,7 +279,7 @@ module Caterer
       def final_cookbook_paths
         cookbooks_path.inject([]) do |res, path|
           # make sure they actually contain recipes, otherwise chef-solo will freak
-          if Dir.entries(path).length > 2
+          if File.exists?(path) and Dir.entries(path).length > 2
             res << "#{target_cookbooks_path}/#{Digest::MD5.hexdigest(path)}"
           end
           res
