@@ -46,7 +46,7 @@ module Caterer
 
         @run_list += provisioner.run_list
         @bootstrap_scripts += provisioner.bootstrap_scripts
-        @json = json.merge(image.json)
+        @json = @json.merge(provisioner.json)
       end
 
       def add_bootstrap(script)
