@@ -112,10 +112,11 @@ module Caterer
 
     def ssh_opts
       {}.tap do |opts|
-        opts[:paranoid] = false
-        opts[:port]     = port
-        opts[:password] = password if password
-        opts[:keys]     = keys if keys.length > 0
+        opts[:paranoid]      = false
+        opts[:port]          = port
+        opts[:password]      = password if password
+        opts[:keys]          = keys if keys.length > 0
+        opts[:forward_agent] = true
       end
     end
 
