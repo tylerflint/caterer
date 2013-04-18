@@ -18,7 +18,12 @@ module Caterer
 
           if env[:provisioner].is_a? Caterer::Provisioner::ChefSolo
             configure_cookbooks_path(env[:provisioner])
-            install(env)
+            if needs_update?(env)
+              ::Berkshelf.formatter.msg "installing cookbooks..."
+              install(env)
+            else
+              ::Berkshelf.formatter.msg "shelf up-to-date..."
+            end
           end
 
           @app.call(env)
@@ -26,12 +31,12 @@ module Caterer
 
         protected
 
+        def needs_update?(env)
+          true
+        end
+
         def install(env)
-          ::Berkshelf.formatter.msg "installing cookbooks..."
-          opts = {
-            path: shelf
-          }.merge(env[:config].berkshelf.to_hash).symbolize_keys!
-          berksfile.install(opts)
+          berksfile.install({path: shelf}.merge(env[:config].berkshelf.to_hash).symbolize_keys!)
         end
 
         def configure_cookbooks_path(provisioner)

@@ -1,18 +1,20 @@
 #!/usr/bin/env ruby
 
-# require 'berkshelf/vagrant'
-require 'vagrant-vbguest' unless defined? VagrantVbguest::Config
+Vagrant.configure("2") do |config|
 
-Vagrant::Config.run do |config|
+  # ubuntu
+  # config.vm.box     = 'precise'
+  # config.vm.box_url = 'http://files.vagrantup.com/precise64.box'
 
-  # config.berkshelf.config_path = './knife.rb'
+  # centos
+  config.vm.box     = 'pagoda_cent6_minimal'
+  config.vm.box_url = 'https://s3.amazonaws.com/vagrant.pagodabox.com/boxes/centos-6.4-x86_64-minimal.box'
 
-  config.vm.box = "precise64"
-  config.vm.box_url = "http://files.vagrantup.com/precise64.box"
-  config.vm.customize ["modifyvm", :id, "--cpus", 1, "--memory", 512]
-  config.vm.network :hostonly, "33.33.33.10"
-  config.vm.share_folder("v-root", "/vagrant", ".")
-  config.vbguest.auto_update = true
+  config.vm.provider "virtualbox" do |v|
+    v.customize ["modifyvm", :id, "--cpus", "2", "--memory", "1024", "--cpuexecutioncap", "75"]
+  end
+
+  config.ssh.forward_agent = true
 
   config.vm.provision :chef_solo do |chef|
     chef.cookbooks_path = ['cookbooks']    
