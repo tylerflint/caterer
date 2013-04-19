@@ -1,3 +1,5 @@
+require 'digest'
+
 module Caterer
   module Action
     module Berkshelf
@@ -5,12 +7,14 @@ module Caterer
         
         attr_reader :shelf
         attr_reader :berksfile
+        attr_reader :cachefile
 
         def initialize(app, env)
           super
 
           @shelf     = Caterer::Berkshelf.shelf_for(env)
           @berksfile = ::Berkshelf::Berksfile.from_file(env[:config].berkshelf.berksfile_path)
+          @cachefile = "#{shelf}/.cache"
         end
 
 
@@ -18,11 +22,12 @@ module Caterer
 
           if env[:provisioner].is_a? Caterer::Provisioner::ChefSolo
             configure_cookbooks_path(env[:provisioner])
-            if needs_update?(env)
+            if needs_update?
               ::Berkshelf.formatter.msg "installing cookbooks..."
               install(env)
+              update_cache
             else
-              ::Berkshelf.formatter.msg "shelf up-to-date..."
+              ::Berkshelf.formatter.msg "up-to-date"
             end
           end
 
@@ -31,8 +36,18 @@ module Caterer
 
         protected
 
-        def needs_update?(env)
-          true
+        def shelf_digest
+          berks_content = ::File.read(berksfile.filepath) rescue nil
+          shelf_content = ::Dir.glob("#{shelf}/[^\.]*")
+          ::Digest::MD5.hexdigest("#{berks_content}/#{shelf_content}")
+        end
+
+        def needs_update?
+          !(::File.exists?(cachefile) and ::File.read(cachefile) == shelf_digest)
+        end
+
+        def update_cache
+          ::File.write(cachefile, shelf_digest)
         end
 
         def install(env)
