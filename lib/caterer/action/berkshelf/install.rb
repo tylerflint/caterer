@@ -22,13 +22,14 @@ module Caterer
 
           if env[:provisioner].is_a? Caterer::Provisioner::ChefSolo
             configure_cookbooks_path(env[:provisioner])
-            if needs_update?
-              ::Berkshelf.formatter.msg "installing cookbooks..."
-              install(env)
-              update_cache
-            else
-              ::Berkshelf.formatter.msg "up-to-date"
-            end
+          end
+
+          if needs_update? or env[:force_berks_install]
+            ::Berkshelf.formatter.msg "installing cookbooks..."
+            install(env)
+            update_cache
+          else
+            ::Berkshelf.formatter.msg "up-to-date"
           end
 
           @app.call(env)

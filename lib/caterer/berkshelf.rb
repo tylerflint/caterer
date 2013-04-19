@@ -27,6 +27,8 @@ module Caterer
 
     def init!
       
+      Caterer.commands.register(:berks) { Caterer::Command::Berks }
+
       Caterer.config_keys.register(:berkshelf) { Config::Berkshelf }
 
       [ :provision, :up ].each do |action|
@@ -34,6 +36,14 @@ module Caterer
       end
 
       Caterer.actions[:clean].use clean
+
+      Caterer.actions.register(:berks_install) do
+        install
+      end
+
+      Caterer.actions.register(:berks_clean) do
+        clean
+      end
 
     end
 
