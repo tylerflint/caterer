@@ -38,8 +38,9 @@ module Caterer
 
         def shelf_digest
           berks_content = ::File.read(berksfile.filepath) rescue nil
+          lock_content  = ::File.read("#{berksfile.filepath}.lock") rescue nil
           shelf_content = ::Dir.glob("#{shelf}/[^\.]*")
-          ::Digest::MD5.hexdigest("#{berks_content}/#{shelf_content}")
+          ::Digest::MD5.hexdigest("#{berks_content}/#{lock_content}/#{shelf_content}")
         end
 
         def needs_update?
