@@ -27,7 +27,7 @@ module Caterer
           until eof do
             begin
               out = stdout.readpartial(4096)
-              if out.match /password:/
+              if out.match /(p|P)assword:/
                 stdin.puts server.password
               else
                 @logger.debug("stdout: #{out}")

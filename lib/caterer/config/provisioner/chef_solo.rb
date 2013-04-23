@@ -5,7 +5,7 @@ module Caterer
         attr_accessor :dest_dir, :run_list, :json, :cookbooks_path, :roles_path, :data_bags_path, :bootstrap_scripts
 
         def initialize
-          @dest_dir          = '/opt/cater_chef_solo'
+          @dest_dir          = '/opt/cater/chef_solo'
           @run_list          = []
           @json              = {}
           @cookbooks_path    = ['cookbooks']

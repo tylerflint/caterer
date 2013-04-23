@@ -34,13 +34,16 @@ detect_platform() {
     then
       platform="el"
     fi
-  # Apple OS X
   elif [ -f "/usr/bin/sw_vers" ];
   then
     platform="mac_os_x"
   elif [ -f "/etc/release" ];
   then
-    platform="solaris2"
+    if [[ -n $(cat /etc/release | grep "SmartOS") ]]; then
+      platform="smartos"
+    else
+      platform="solaris2"
+    fi
   elif [ -f "/etc/SuSE-release" ];
   then
     if grep -q 'Enterprise' /etc/SuSE-release;
@@ -74,9 +77,25 @@ install() {
     "sles" )
       yast -i $1
       ;;
+  esac
+}
+
+bootstrap() {
+  echo "bootstrapping chef..."
+  case $(detect_platform) in
+    "smartos" )
+      # I don't know how legit this is :/
+      echo "downloading fatclient from Ben Rockland library..."
+      wget -q -P /tmp http://cuddletech.com/smartos/Chef-fatclient-SmartOS-10.14.2.tar.bz2 
+      cd /; tar -xjf /tmp/Chef-fatclient-SmartOS-10.14.2.tar.bz2
+      # make an executable link
+      mkdir -p /opt/local/bin
+      ln -s /opt/local/bin/chef-solo /opt/chef/bin/chef-solo 
+      # cleanup
+      rm -f /tmp/Chef-fatclient-SmartOS-10.14.2.tar.bz2
+      ;;
     *)
-      echo "sorry, I don't have a bootstrap for this platform"
-      exit 1
+      curl -L https://www.opscode.com/chef/install.sh | bash
       ;;
   esac
 }
@@ -86,4 +105,4 @@ exists curl || install curl
 exists rsync || install rsync
 
 # install chef-solo
-exists chef-solo || curl -L https://www.opscode.com/chef/install.sh | bash
+exists chef-solo || bootstrap
