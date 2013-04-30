@@ -41,8 +41,18 @@ detect_platform() {
   then
     if [[ -n $(cat /etc/release | grep "SmartOS") ]]; then
       platform="smartos"
-    else
+    elif [[ -n $(cat /etc/release | grep "OmniOS") ]]; then
+      platform="omnios"
+    elif [[ -n $(cat /etc/release | grep "OpenIndiana") ]]; then
+      platform="openindiana"
+    elif [[ -n $(cat /etc/release | grep "OpenSolaris") ]]; then
+      platform="opensolaris"
+    elif [[ -n $(cat /etc/release | grep "Oracle Solaris") ]]; then
+      platform="oracle_solaris"
+    elif [[ -n $(cat /etc/release | grep "Solaris") ]]; then
       platform="solaris2"
+    elif [[ -n $(cat /etc/release | grep "NexentaCore") ]]; then
+      platform="nexentacore"
     fi
   elif [ -f "/etc/SuSE-release" ];
   then
@@ -84,9 +94,9 @@ bootstrap() {
   echo "bootstrapping chef..."
   case $(detect_platform) in
     "smartos" )
-      # I don't know how legit this is :/
-      echo "downloading fatclient from Ben Rockland library..."
-      wget -q -P /tmp http://cuddletech.com/smartos/Chef-fatclient-SmartOS-10.14.2.tar.bz2 
+      # made this one myself :)
+      echo "downloading chef fatclient..."
+      wget -q -P https://s3.amazonaws.com/packages.pagodabox.com/tar/smartos/chef/chef-fatclient.tar.bz2
       cd /; tar -xjf /tmp/Chef-fatclient-SmartOS-10.14.2.tar.bz2
       # make an executable link
       mkdir -p /opt/local/bin

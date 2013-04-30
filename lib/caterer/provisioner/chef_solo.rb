@@ -8,6 +8,8 @@ module Caterer
   module Provisioner
     class ChefSolo < Base
       
+      include Util::Shell
+
       attr_reader :run_list
       attr_accessor :dest_dir, :json, :cookbooks_path, :roles_path
       attr_accessor :data_bags_path, :bootstrap_scripts
@@ -130,16 +132,14 @@ module Caterer
       def install(server)
         server.ui.info "Preparing installation..."
 
-        # upload
-        server.ssh.upload install_script, "#{target_install_path}"
+        installer = install_script(server.platform)
 
-        # set permissions
-        server.ssh.sudo "chown #{server.username} #{target_install_path}", :stream => true
-        server.ssh.sudo "chmod +x #{target_install_path}", :stream => true
+        if not File.exists? installer
+          server.ui.error "#{server.platform} doesn't have an install script"
+          return
+        end
 
-        # run
-        server.ui.info "Installing chef-solo..."
-        res = server.ssh.sudo "#{target_install_path}", :stream => true
+        res = server.ssh.sudo bash(File.read(installer)), :stream => true
 
         unless res == 0
           server.ui.error "install failed with exit code: #{res}"
@@ -261,8 +261,8 @@ module Caterer
         "#{dest_dir}/config.json"
       end
 
-      def install_script
-        File.expand_path("../../../templates/provisioner/chef_solo/bootstrap.sh", __FILE__)
+      def install_script(platform)
+        File.expand_path("../../../templates/provisioner/chef_solo/bootstrap/#{platform}.sh", __FILE__)
       end
 
       def solo_content(server)

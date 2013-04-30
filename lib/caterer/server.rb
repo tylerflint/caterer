@@ -3,6 +3,8 @@ require 'digest'
 
 module Caterer
   class Server
+
+    include Util::Shell
     
     attr_reader :env
 
@@ -170,6 +172,27 @@ module Caterer
       }.merge(options || {})
 
       env.action_runner.run(name, options)
+    end
+
+    def detect_platform
+      @platform ||= begin
+        ui.info "Detecting platform..."
+        out = ""
+        res = ssh.sudo bash(File.read(platform_script)) do |_stream, data|
+          out += data
+        end
+        if res == 0
+          out.strip # success
+        else
+          ui.error "Unknown platform"
+          false
+        end
+      end
+    end
+    alias :platform :detect_platform
+
+    def platform_script
+      File.expand_path("../../templates/server/platform.sh", __FILE__)
     end
 
     def upload_directory(from, to)
