@@ -108,7 +108,8 @@ module Caterer
           data = group.data.merge(member.data)
 
           if options[:data]
-            json = MultiJson.load options[:data], :symbolize_keys => true rescue nil
+            # todo: rather than puking if the json is valid, this should create a pretty language
+            json = MultiJson.load options[:data], :symbolize_keys => true
             data = data.merge(json) if json and json.is_a? Hash
           end
 
