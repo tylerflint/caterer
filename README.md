@@ -1,8 +1,8 @@
-# Caterer
+## Caterer
 
 Caterer is a tool for provisioning production environments.
 
-## Getting Started
+### Getting Started
 
 Install caterer:
 
