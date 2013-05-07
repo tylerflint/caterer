@@ -4,13 +4,13 @@ Caterer is a tool for provisioning production environments.
 
 ### Getting Started
 
-Install caterer:
+#### Install caterer:
 
 ```bash
 gem install caterer
 ```
 
-Define images in a Caterfile:
+#### Define images in a Caterfile:
 
 ```ruby
 Caterer.configure do |config|
@@ -30,7 +30,7 @@ Caterer.configure do |config|
 end
 ```
 
-Provision a server with the "rails" image:
+#### Provision a server with the "rails" image:
 
 ```bash
 cater provision -i rails HOST
