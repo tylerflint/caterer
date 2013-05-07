@@ -52,7 +52,13 @@ Some definitions to help you through the rest of the guides: [Definitions](https
 
 A few cli usage examples: [cli examples](https://github.com/tylerflint/caterer/wiki/cli-examples)
 
+### Configuration...
 
+* [general](https://github.com/tylerflint/caterer/wiki/Config:-General)
+* [images](https://github.com/tylerflint/caterer/wiki/Config:-Images)
+* [members](https://github.com/tylerflint/caterer/wiki/Config:-Members)
+* [groups](https://github.com/tylerflint/caterer/wiki/Config:-Groups)
+* [chef-solo provisioner]()
 
 
 
