@@ -33,7 +33,7 @@ end
 #### Provision a server with the "rails" image:
 
 ```bash
-cater provision -i rails HOST
+cater provision HOST -i rails
 ```
 
 ## Documentation
