@@ -48,6 +48,12 @@ Here is the basic information to get started: [Soup to Nuts](https://github.com/
 
 For answers to the most frequently asked questions: [FAQ](https://github.com/tylerflint/caterer/wiki/FAQ)
 
+Some definitions to help you through the rest of the guides: [Definitions](https://github.com/tylerflint/caterer/wiki/Definitions)
+
+A few cli usage examples: [cli examples](https://github.com/tylerflint/caterer/wiki/cli-examples)
+
+
+
 
 
 ## Contributing
