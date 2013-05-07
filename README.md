@@ -36,6 +36,20 @@ end
 cater provision -i rails HOST
 ```
 
+## Documentation
+
+The Caterer Wiki has lots of additional information about Caterer including many usage references, configuration examples, how-to articles, and answers to the most frequently asked questions.
+
+You can view all of the available wiki pages [here](https://github.com/tylerflint/caterer/wiki/_pages).
+
+### Getting started...
+
+Here is the basic information to get started: [Soup to Nuts](https://github.com/tylerflint/caterer/wiki/Soup-to-Nuts)
+
+For answers to the most frequently asked questions: [FAQ](https://github.com/tylerflint/caterer/wiki/FAQ)
+
+
+
 ## Contributing
 
 1. Fork it
