@@ -42,7 +42,7 @@ The Caterer Wiki has lots of additional information about Caterer including many
 
 You can view all of the available wiki pages [here](https://github.com/tylerflint/caterer/wiki/_pages).
 
-### Getting started...
+### Getting started
 
 Here is the basic information to get started: [Soup to Nuts](https://github.com/tylerflint/caterer/wiki/Soup-to-Nuts)
 
@@ -52,13 +52,15 @@ Some definitions to help you through the rest of the guides: [Definitions](https
 
 A few cli usage examples: [cli examples](https://github.com/tylerflint/caterer/wiki/cli-examples)
 
-### Configuration...
+### Configuration
 
 * [general](https://github.com/tylerflint/caterer/wiki/Config:-General)
 * [images](https://github.com/tylerflint/caterer/wiki/Config:-Images)
 * [members](https://github.com/tylerflint/caterer/wiki/Config:-Members)
 * [groups](https://github.com/tylerflint/caterer/wiki/Config:-Groups)
-* [chef-solo provisioner]()
+
+#### Provisioners 
+* [chef-solo](https://github.com/tylerflint/caterer/wiki/Config:-Provisioners:-chef-solo)
 
 
 
