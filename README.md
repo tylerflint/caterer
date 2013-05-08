@@ -66,9 +66,9 @@ A few cli usage examples: [cli examples](https://github.com/tylerflint/caterer/w
 
 Use berkshelf for cookbook dependencies: [Howto: Berkshelf](https://github.com/tylerflint/caterer/wiki/Howto:-Berkshelf)
 
-Display verbose output: [Howto: Verbose Logging]()
+Display verbose output: [Howto: Verbose Logging](https://github.com/tylerflint/caterer/wiki/Howto:-Verbose-Logging)
 
-Structure a large project: [Howto: Large Projects]()
+Structure a large project: [Howto: Large Projects](https://github.com/tylerflint/caterer/wiki/Howto:-Large-Projects)
 
 Limit chef runlist for iterative provisioning: [Howto: Runlist Override]()
 
