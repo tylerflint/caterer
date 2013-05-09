@@ -192,7 +192,7 @@ module Caterer
     alias :platform :detect_platform
 
     def platform_script
-      File.expand_path("../../templates/server/platform.sh", __FILE__)
+      File.expand_path("../templates/server/platform.sh", __FILE__)
     end
 
     def upload_directory(from, to)
