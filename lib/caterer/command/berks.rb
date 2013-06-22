@@ -1,19 +1,16 @@
 module Caterer
   module Command
-    class Berks < Vli::Command::Base
+    class Berks < Base
       
       def execute
         options = {}
-        opts = OptionParser.new do |opts|
+        parser = OptionParser.new do |opts|
           opts.banner = "Usage: cater berks install|update|clean"
         end
 
         # Parse the options
-        argv = parse_options(opts)
-        if not argv.any?
-          safe_puts(opts.help)
-          return
-        end
+        argv = parse_options(parser, true)
+        return if not argv
 
         case argv.first
         when 'install'
@@ -23,7 +20,7 @@ module Caterer
         when 'clean'
           run_action :berks_clean, {force_berks_clean: true}
         else
-          safe_puts(opts.help)
+          safe_puts(parser.help)
         end
 
         0

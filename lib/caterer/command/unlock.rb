@@ -1,15 +1,17 @@
 module Caterer
   module Command
-    class Unlock < Base
+    class Unlock < Server
       
       def execute
         options = {}
-        opts = OptionParser.new do |opts|
+        parser = OptionParser.new do |opts|
           opts.banner = "Usage: cater unlock HOST [options]"
         end
 
+        add_server_opts(parser, options)
+
         # Parse the options
-        argv = parse_options(opts, options, true)
+        argv = parse_options(parser, true)
         return if not argv
 
         with_target_servers(argv, options) do |server|
