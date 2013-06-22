@@ -1,15 +1,16 @@
 module Caterer
   module Command
-    class Bootstrap < Base
+    class Bootstrap < Server
       
       def execute
         options = {}
-        opts = OptionParser.new do |opts|
+        parser = OptionParser.new do |opts|
           opts.banner = "Usage: cater bootstrap HOST [options]"
         end
 
-        # Parse the options
-        argv = parse_options(opts, options, true)
+        add_server_opts(parser, options)
+
+        argv = parse_options(parser, true)
         return if not argv
 
         with_target_servers(argv, options) do |server|
