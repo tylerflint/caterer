@@ -44,8 +44,10 @@ module Caterer
           ::Digest::MD5.hexdigest("#{berks_content}/#{lock_content}/#{shelf_content}")
         end
 
+        # default to true for time being...
         def needs_update?
-          !(::File.exists?(cachefile) and ::File.read(cachefile) == shelf_digest)
+          # !(::File.exists?(cachefile) and ::File.read(cachefile) == shelf_digest)
+          true
         end
 
         def update_cache
