@@ -102,7 +102,7 @@ module Caterer
           data
         end
 
-        Server.new(@env, opts)
+        Caterer::Server.new(@env, opts)
       end
 
       def image_list(options={})
