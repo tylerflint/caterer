@@ -21,9 +21,6 @@ module Caterer
         parser.on('-e ENGINE', '--engine ENGINE', 'provision engine' ) do |e|
           options[:engine] = e
         end
-        parser.on('-d JSON', '--data JSON', 'json data that the provisioner may use' ) do |d|
-          options[:data] = d
-        end
         parser.on('-i IMAGE', '--image IMAGE', 'corresponds to a image in Caterfile') do |i|
           options[:image] = i
         end

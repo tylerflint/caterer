@@ -11,6 +11,10 @@ module Caterer
         add_server_opts(parser, options)
 
         # add provision specific options
+        parser.on('-d JSON', '--data JSON', 'json data that the provisioner may use' ) do |d|
+          options[:data] = d
+        end
+        parser.separator ""
 
         # Parse the options
         argv = parse_options(parser, true)
