@@ -10,18 +10,19 @@ module Caterer
       
       include Util::Shell
 
-      attr_reader :run_list
-      attr_accessor :dest_dir, :json, :cookbooks_path, :roles_path
+      attr_reader   :name, :run_list, :dest_dir
+      attr_accessor :json, :cookbooks_path, :roles_path
       attr_accessor :data_bags_path, :bootstrap_scripts
 
-      def initialize
-        @dest_dir          = config.dest_dir.dup
-        @run_list          = config.run_list.dup
-        @json              = config.json.dup
-        @cookbooks_path    = config.cookbooks_path.dup
-        @roles_path        = config.roles_path.dup
-        @data_bags_path    = config.data_bags_path.dup
-        @bootstrap_scripts = config.bootstrap_scripts.dup
+      def initialize(name)
+        @name              = name
+        @dest_dir          = config.dest_dir
+        @run_list          = provisioner_config.run_list.dup
+        @json              = provisioner_config.json.dup
+        @cookbooks_path    = provisioner_config.cookbooks_path.dup
+        @roles_path        = provisioner_config.roles_path.dup
+        @data_bags_path    = provisioner_config.data_bags_path.dup
+        @bootstrap_scripts = provisioner_config.bootstrap_scripts.dup
       end
 
       # config DSL
@@ -36,7 +37,7 @@ module Caterer
 
       # I don't like this at all, but it seems to make the best Caterfile workflow
       def add_image(image)
-        image = Caterer.config.images[image]
+        image = config.images[image]
         raise "Unknown image :#{image}" if not image
 
         provisioner = image.provisioner
@@ -118,17 +119,6 @@ module Caterer
 
       end
 
-      def bootstrapped?(server)
-        res = server.ssh.sudo "command -v chef-solo &>/dev/null"
-        res == 0 ? true : false
-      end
-
-      def prepare(server)
-        # create base dir
-        server.ssh.sudo "mkdir -p #{dest_dir}", :stream => true
-        server.ssh.sudo "chown -R #{server.username} #{dest_dir}", :stream => true
-      end
-
       def install(server)
         server.ui.info "Preparing installation..."
 
@@ -146,7 +136,15 @@ module Caterer
         end
       end
 
-      def provision(server)
+      def installed?(server)
+        res = server.ssh.sudo "command -v chef-solo &>/dev/null"
+        res == 0 ? true : false
+      end
+
+      def prepare(server)
+        # create base dir
+        server.ssh.sudo "mkdir -p #{dest_lib_dir}", :stream => true
+        server.ssh.sudo "chown -R #{server.username} #{dest_lib_dir}", :stream => true
 
         # create cookbooks directory
         server.ssh.sudo "mkdir -p #{target_cookbooks_path}", :stream => true
@@ -186,17 +184,27 @@ module Caterer
         server.ui.info "Generating json config..."
         server.ssh.upload(StringIO.new(json_config(config_data.merge(server.data))), target_json_config_path)
 
-        # set permissions on everything
-        server.ssh.sudo "chown -R #{server.username} #{dest_dir}", :stream => true
+        # create bin wrapper
+        server.ui.info "Generating bin wrapper..."
+        server.ssh.upload(StringIO.new(bin_wrapper_content), target_bin_wrapper_path)
+        server.ssh.sudo "chmod +x #{target_bin_wrapper_path}", :stream => true
 
+        # set permissions on everything
+        server.ssh.sudo "chown -R #{server.username} #{dest_lib_dir}", :stream => true
+        server.ssh.sudo "chown -R #{server.username} #{dest_bin_dir}", :stream => true
+
+      end
+
+      def provision(server)
         # run
         server.ui.info "Running chef-solo..."
-        res = server.ssh.sudo command_string, :stream => true
+        res = server.ssh.sudo target_bin_wrapper_path, :stream => true
         unless res == 0
           server.ui.error "chef-solo failed with exit code: #{res}"
         end
       end
 
+      # this may not be necessary...
       def cleanup(server)
         server.ui.info "Cleaning up..."
 
@@ -218,13 +226,17 @@ module Caterer
       def uninstall(server)
         server.ui.info "Uninstalling..."
 
-        server.ssh.sudo "rm -rf #{dest_dir}", :stream => true
+        # figure out how to uninstall chef_solo IF we installed it
       end
 
       protected
 
       def config
-        @config ||= Caterer.config.provisioner.chef_solo
+        @config ||= Caterer.config
+      end
+
+      def provisioner_config
+        @provisioner_config ||= config.provisioner.chef_solo
       end
 
       def with_bootstrap_scripts
@@ -233,32 +245,44 @@ module Caterer
         end
       end
 
+      def dest_lib_dir
+        "#{dest_dir}/lib/#{name}"
+      end
+
+      def dest_bin_dir
+        "#{dest_dir}/bin"
+      end
+
       def target_install_path
-        "#{dest_dir}/install"
+        "#{dest_lib_dir}/install"
       end
 
       def target_bootstrap_path
-        "#{dest_dir}/bootstrap"
+        "#{dest_lib_dir}/bootstrap"
       end
 
       def target_cookbooks_path
-        "#{dest_dir}/cookbooks"
+        "#{dest_lib_dir}/cookbooks"
       end
 
       def target_roles_path
-        "#{dest_dir}/roles"
+        "#{dest_lib_dir}/roles"
       end
 
       def target_data_bags_path
-        "#{dest_dir}/data_bags"
+        "#{dest_lib_dir}/data_bags"
       end
 
       def target_solo_path
-        "#{dest_dir}/solo.rb"
+        "#{dest_lib_dir}/solo.rb"
       end
 
       def target_json_config_path
-        "#{dest_dir}/config.json"
+        "#{dest_lib_dir}/config.json"
+      end
+
+      def target_bin_wrapper_path
+        "#{dest_bin_dir}/cater-#{name}"
       end
 
       def install_script(platform)
@@ -267,6 +291,10 @@ module Caterer
 
       def solo_content(server)
         Tilt.new(File.expand_path('../../../templates/provisioner/chef_solo/solo.erb', __FILE__)).render(self, {:server => server})
+      end
+
+      def bin_wrapper_content
+        Tilt.new(File.expand_path('../../../templates/provisioner/chef_solo/bin_wrapper.erb', __FILE__)).render(self)
       end
 
       def json_config(data)
@@ -285,10 +313,6 @@ module Caterer
           end
           res
         end
-      end
-
-      def command_string
-        "chef-solo -c #{target_solo_path} -j #{target_json_config_path}"
       end
 
     end

@@ -14,6 +14,13 @@ module Caterer
         parser.on('-d JSON', '--data JSON', 'json data that the provisioner may use' ) do |d|
           options[:data] = d
         end
+        parser.on('--ghost', 'provision in ghost-mode (leave no trace)') do
+          options[:ghost] = true
+        end
+        parser.on('--dry', "sync provision configuration, but don't run the provisioner") do
+          options[:dry] = true
+        end
+
         parser.separator ""
 
         # Parse the options
@@ -21,7 +28,7 @@ module Caterer
         return if not argv
 
         with_target_servers(argv, options) do |server|
-          server.provision
+          server.provision(dry_run: options[:dry], ghost_mode: options[:ghost])
         end
 
         0

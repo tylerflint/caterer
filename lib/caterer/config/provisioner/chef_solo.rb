@@ -2,10 +2,9 @@ module Caterer
   module Config
     module Provisioner
       class ChefSolo
-        attr_accessor :dest_dir, :run_list, :json, :cookbooks_path, :roles_path, :data_bags_path, :bootstrap_scripts
+        attr_accessor :run_list, :json, :cookbooks_path, :roles_path, :data_bags_path, :bootstrap_scripts
 
         def initialize
-          @dest_dir          = '/opt/cater/chef_solo'
           @run_list          = []
           @json              = {}
           @cookbooks_path    = ['cookbooks']

@@ -4,7 +4,7 @@ module Caterer
       class Provision < Base
 
         def call(env)
-          env[:provisioner].provision(env[:server])
+          env[:provisioner].provision(env[:server]) if not env[:dry_run]
           @app.call(env)
         end
         

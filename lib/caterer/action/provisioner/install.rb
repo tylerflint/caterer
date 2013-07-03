@@ -4,7 +4,7 @@ module Caterer
       class Install < Base
 
         def call(env)
-          env[:provisioner].install(env[:server])
+          env[:provisioner].install(env[:server]) if not env[:provisioner].installed?(env[:server])
           @app.call(env)
         end
         

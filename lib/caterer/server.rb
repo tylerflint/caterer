@@ -100,6 +100,23 @@ module Caterer
       res == 0 ? true : false
     end
 
+    def prepare
+      ui.info "Preparing server..."
+      ssh.sudo "mkdir -p #{config.dest_dir}", :stream => true
+      ssh.sudo "mkdir -p #{config.dest_dir}/lib", :stream => true
+      ssh.sudo "mkdir -p #{config.dest_dir}/bin", :stream => true
+      ssh.sudo "chown -R #{username} #{config.dest_dir}", :stream => true
+    end
+
+    def cleanup
+      ui.info "Cleaning up server..."
+      ssh.sudo "rm -rf #{config.dest_dir}"
+    end
+
+    def config
+      @config ||= Caterer.config
+    end
+
     def ssh
       @ssh ||= Communication::SSH.new(self)
     end

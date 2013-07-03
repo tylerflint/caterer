@@ -3,12 +3,13 @@ module Caterer
     class Base
 
       attr_reader :images, :groups
-      attr_accessor :default_provisioner
+      attr_accessor :dest_dir, :default_provisioner
 
       def initialize
-        @images = {}
-        @groups = {}
-        @keys   = {}
+        @images   = {}
+        @groups   = {}
+        @keys     = {}
+        @dest_dir = '/opt/cater'
       end
 
       def image(name)

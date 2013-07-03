@@ -1,13 +1,13 @@
 module Caterer
   module Action
-    module Provisioner
+    module Server
       class Cleanup < Base
-
+        
         def call(env)
-          env[:provisioner].uninstall(env[:server]) if env[:ghost_mode]
+          env[:server].cleanup if env[:ghost_mode]
           @app.call(env)
         end
-        
+
       end
     end
   end

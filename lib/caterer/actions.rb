@@ -34,8 +34,8 @@ Caterer.actions.register(:bootstrap) do
     use Caterer::Action::Provisioner::Prepare
     use Caterer::Action::Server::Lock
     use Caterer::Action::Provisioner::Bootstrap
-    use Caterer::Action::Provisioner::Install
-    use Caterer::Action::Provisioner::Cleanup
+    # use Caterer::Action::Provisioner::Install
+    # use Caterer::Action::Provisioner::Cleanup
     use Caterer::Action::Server::Unlock
   end
 end
@@ -46,12 +46,15 @@ Caterer.actions.register(:provision) do
     use Caterer.actions.get(:validate)
     use Caterer::Action::Server::Platform
     use Caterer::Action::Provisioner::Load
-    use Caterer::Action::Provisioner::Prepare
-    use Caterer::Action::Provisioner::Validate::Bootstrapped
     use Caterer::Action::Server::Lock
+    use Caterer::Action::Server::Prepare
+    use Caterer::Action::Provisioner::Install
+    use Caterer::Action::Provisioner::Prepare
     use Caterer::Action::Provisioner::Provision
     use Caterer::Action::Provisioner::Cleanup
+    use Caterer::Action::Server::Cleanup
     use Caterer::Action::Server::Unlock
+    
   end
 end
 

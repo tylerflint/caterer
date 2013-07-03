@@ -10,8 +10,8 @@ module Caterer
 
       def provision(type)
         provisioner_klass = Caterer.provisioners.get(type)
-        raise ":#{type} is not a valida provisioner" if not provisioner_klass
-        @provisioner = provisioner_klass.new
+        raise ":#{type} is not a valid provisioner" if not provisioner_klass
+        @provisioner = provisioner_klass.new(name)
         yield @provisioner if block_given?
         @provisioner
       end
