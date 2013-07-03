@@ -131,6 +131,8 @@ module Caterer
 
         res = server.ssh.sudo bash(File.read(installer)), :stream => true
 
+        # somewhere mark that we installed chef-solo for later uninstall
+
         unless res == 0
           server.ui.error "install failed with exit code: #{res}"
         end

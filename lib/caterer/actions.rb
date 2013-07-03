@@ -25,6 +25,7 @@ Caterer.actions.register(:unlock) do
   end
 end
 
+# todo: bootstrap needs to be a server process not a provisioner process
 Caterer.actions.register(:bootstrap) do
   Vli::Action::Builder.new do
     use Caterer::Action::Environment::Setup
@@ -54,7 +55,6 @@ Caterer.actions.register(:provision) do
     use Caterer::Action::Provisioner::Cleanup
     use Caterer::Action::Server::Cleanup
     use Caterer::Action::Server::Unlock
-    
   end
 end
 
