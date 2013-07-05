@@ -12,7 +12,7 @@ module Caterer
           image.provisioners.each do |provisioner|
 
             %w(install prepare run cleanup uninstall).each do |action|
-              send action.to_sym server, provisioner
+              send action.to_sym, server, provisioner
             end
           end
 
