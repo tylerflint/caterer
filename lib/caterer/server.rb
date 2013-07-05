@@ -25,18 +25,6 @@ module Caterer
       @logger.info("Server: #{opts.inspect}")
     end
 
-    def bootstrap(opts={})
-      if @images.length > 0
-        @images.each do |i|
-          ui.info "*** Bootstrapping image: #{i} ***"
-          run_action(:bootstrap, opts.merge({:image => i}))
-        end        
-      else
-        ui.info "*** Bootstrapping ***"
-        run_action(:bootstrap, opts.merge({:engine => @engine}))
-      end
-    end
-
     def provision(opts={})
       if @images.length > 0
         @images.each do |i|
@@ -44,20 +32,7 @@ module Caterer
           run_action(:provision, opts.merge({:image => i}))
         end
       else
-        ui.info "*** Provisioning ***"
-        run_action(:provision, opts.merge({:engine => @engine}))
-      end
-    end
-
-    def up(opts={})
-      if @images.length > 0
-        @images.each do |i|
-          ui.info "*** Up'ing image: #{i} ***"
-          run_action(:up, opts.merge({:image => i}))
-        end
-      else
-        ui.info "*** Up'ing ***"
-        run_action(:up, opts.merge({:engine => @engine}))
+        ui.error "*** No image to provision ***"
       end
     end
 
@@ -100,7 +75,7 @@ module Caterer
       res == 0 ? true : false
     end
 
-    def prepare
+    def prepare!
       ui.info "Preparing server..."
       ssh.sudo "mkdir -p #{config.dest_dir}", :stream => true
       ssh.sudo "mkdir -p #{config.dest_dir}/lib", :stream => true
@@ -108,7 +83,7 @@ module Caterer
       ssh.sudo "chown -R #{username} #{config.dest_dir}", :stream => true
     end
 
-    def cleanup
+    def cleanup!
       ui.info "Cleaning up server..."
       ssh.sudo "rm -rf #{config.dest_dir}"
     end
@@ -236,6 +211,12 @@ module Caterer
 
     def lock_path
       "/tmp/cater.lock"
+    end
+
+    def with_bootstrap_scripts
+      bootstrap_scripts.each_with_index do |script, index|
+        yield script, index if block_given?
+      end
     end
 
   end

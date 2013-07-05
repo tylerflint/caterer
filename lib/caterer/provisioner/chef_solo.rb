@@ -12,7 +12,7 @@ module Caterer
 
       attr_reader   :name, :run_list, :dest_dir
       attr_accessor :json, :cookbooks_path, :roles_path
-      attr_accessor :data_bags_path, :bootstrap_scripts
+      attr_accessor :data_bags_path
 
       def initialize(name)
         @name              = name
@@ -22,7 +22,6 @@ module Caterer
         @cookbooks_path    = provisioner_config.cookbooks_path.dup
         @roles_path        = provisioner_config.roles_path.dup
         @data_bags_path    = provisioner_config.data_bags_path.dup
-        @bootstrap_scripts = provisioner_config.bootstrap_scripts.dup
       end
 
       # config DSL
@@ -81,43 +80,6 @@ module Caterer
       end
 
       # provision engine
-
-      def bootstrap(server)
-
-        # validate
-        with_bootstrap_scripts do |script, count|
-
-          if not File.exists? script
-            server.ui.error "#{script} does not exist!"
-            return
-          end
-
-        end
-
-        # upload
-        with_bootstrap_scripts do |script, count|
-
-          server.ui.info "Uploading #{script}..."
-          server.ssh.upload script, "#{target_bootstrap_path}-#{count}"
-
-          server.ssh.sudo "chown #{server.username} #{target_bootstrap_path}-#{count}", :stream => true
-          server.ssh.sudo "chmod +x #{target_bootstrap_path}-#{count}", :stream => true
-
-        end
-
-        # run
-        with_bootstrap_scripts do |script, count|
-
-          server.ui.info "Running #{script}..."
-          res = server.ssh.sudo "#{target_bootstrap_path}-#{count}", :stream => true
-
-          unless res == 0
-            server.ui.error "#{script} failed with exit code: #{res}"
-          end
-
-        end
-
-      end
 
       def install(server)
         server.ui.info "Preparing installation..."
@@ -207,23 +169,23 @@ module Caterer
       end
 
       # this may not be necessary...
-      def cleanup(server)
-        server.ui.info "Cleaning up..."
+      # def cleanup(server)
+      #   server.ui.info "Cleaning up..."
 
-        # installer
-        server.ssh.sudo "rm -f #{target_install_path}", :stream => true
+      #   # installer
+      #   server.ssh.sudo "rm -f #{target_install_path}", :stream => true
 
-        # bootstrap scripts
-        server.ssh.sudo "rm -f #{target_bootstrap_path}*", :stream => true
+      #   # bootstrap scripts
+      #   server.ssh.sudo "rm -f #{target_bootstrap_path}*", :stream => true
 
-        # solo.rb
-        server.ssh.sudo "rm -f #{target_solo_path}", :stream => true
+      #   # solo.rb
+      #   server.ssh.sudo "rm -f #{target_solo_path}", :stream => true
 
-        # json
-        server.ssh.sudo "rm -f #{target_json_config_path}", :stream => true
+      #   # json
+      #   server.ssh.sudo "rm -f #{target_json_config_path}", :stream => true
 
-        # for now, leave cookbooks, roles, and data bags for faster provisioning
-      end
+      #   # for now, leave cookbooks, roles, and data bags for faster provisioning
+      # end
 
       def uninstall(server)
         server.ui.info "Uninstalling..."
@@ -239,12 +201,6 @@ module Caterer
 
       def provisioner_config
         @provisioner_config ||= config.provisioner.chef_solo
-      end
-
-      def with_bootstrap_scripts
-        bootstrap_scripts.each_with_index do |script, index|
-          yield script, index if block_given?
-        end
       end
 
       def dest_lib_dir
@@ -288,7 +244,7 @@ module Caterer
       end
 
       def install_script(platform)
-        File.expand_path("../../../templates/provisioner/chef_solo/bootstrap/#{platform}.sh", __FILE__)
+        File.expand_path("../../../templates/provisioner/chef_solo/install/#{platform}.sh", __FILE__)
       end
 
       def solo_content(server)

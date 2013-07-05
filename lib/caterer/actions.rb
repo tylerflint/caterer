@@ -25,22 +25,6 @@ Caterer.actions.register(:unlock) do
   end
 end
 
-# todo: bootstrap needs to be a server process not a provisioner process
-Caterer.actions.register(:bootstrap) do
-  Vli::Action::Builder.new do
-    use Caterer::Action::Environment::Setup
-    use Caterer.actions.get(:validate)
-    use Caterer::Action::Server::Platform
-    use Caterer::Action::Provisioner::Load
-    use Caterer::Action::Provisioner::Prepare
-    use Caterer::Action::Server::Lock
-    use Caterer::Action::Provisioner::Bootstrap
-    # use Caterer::Action::Provisioner::Install
-    # use Caterer::Action::Provisioner::Cleanup
-    use Caterer::Action::Server::Unlock
-  end
-end
-
 Caterer.actions.register(:provision) do
   Vli::Action::Builder.new do
     use Caterer::Action::Environment::Setup
@@ -53,23 +37,8 @@ Caterer.actions.register(:provision) do
     use Caterer::Action::Provisioner::Prepare
     use Caterer::Action::Provisioner::Provision
     use Caterer::Action::Provisioner::Cleanup
+    use Caterer::Action::Provisioner::Uninstall
     use Caterer::Action::Server::Cleanup
-    use Caterer::Action::Server::Unlock
-  end
-end
-
-Caterer.actions.register(:up) do
-  Vli::Action::Builder.new do
-    use Caterer::Action::Environment::Setup
-    use Caterer.actions.get(:validate)
-    use Caterer::Action::Server::Platform
-    use Caterer::Action::Provisioner::Load
-    use Caterer::Action::Provisioner::Prepare
-    use Caterer::Action::Server::Lock
-    use Caterer::Action::Provisioner::Bootstrap
-    use Caterer::Action::Provisioner::Install
-    use Caterer::Action::Provisioner::Provision
-    use Caterer::Action::Provisioner::Cleanup
     use Caterer::Action::Server::Unlock
   end
 end

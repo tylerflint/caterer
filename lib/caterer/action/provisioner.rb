@@ -1,7 +1,6 @@
 module Caterer
   module Action
     module Provisioner
-      autoload :Bootstrap,  'caterer/action/provisioner/bootstrap'
       autoload :Cleanup,    'caterer/action/provisioner/cleanup'
       autoload :Install,    'caterer/action/provisioner/install'
       autoload :Load,       'caterer/action/provisioner/load'
