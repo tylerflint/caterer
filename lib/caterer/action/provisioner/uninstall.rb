@@ -4,7 +4,15 @@ module Caterer
       class Uninstall < Base
 
         def call(env)
-          env[:provisioner].uninstall(env[:server])
+
+          config = env[:config]
+          server = env[:server]
+          image  = config.images[env[:image]]
+
+          image.provisioners.each do |provisioner|
+            provisioner.uninstall(server)
+          end
+
           @app.call(env)
         end
         

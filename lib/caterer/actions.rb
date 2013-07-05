@@ -3,7 +3,6 @@ Caterer.actions.register(:validate) do
   Vli::Action::Builder.new do
     use Caterer::Action::Config::Validate::Image
     use Caterer::Action::Config::Validate::Provisioner
-    use Caterer::Action::Provisioner::Validate::Engine
     use Caterer::Action::Server::Validate::SSH
     use Caterer::Action::Server::Validate::Unlocked
   end
@@ -30,14 +29,9 @@ Caterer.actions.register(:provision) do
     use Caterer::Action::Environment::Setup
     use Caterer.actions.get(:validate)
     use Caterer::Action::Server::Platform
-    use Caterer::Action::Provisioner::Load
     use Caterer::Action::Server::Lock
     use Caterer::Action::Server::Prepare
-    use Caterer::Action::Provisioner::Install
-    use Caterer::Action::Provisioner::Prepare
-    use Caterer::Action::Provisioner::Provision
-    use Caterer::Action::Provisioner::Cleanup
-    use Caterer::Action::Provisioner::Uninstall
+    use Caterer::Action::Provisioner::Run
     use Caterer::Action::Server::Cleanup
     use Caterer::Action::Server::Unlock
   end
@@ -57,7 +51,6 @@ Caterer.actions.register(:clean) do
     use Caterer::Action::Environment::Setup
     use Caterer.actions.get(:validate)
     use Caterer::Action::Server::Platform
-    use Caterer::Action::Provisioner::Load
     use Caterer::Action::Provisioner::Uninstall
   end
 end

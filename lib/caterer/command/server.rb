@@ -18,9 +18,6 @@ module Caterer
         parser.on('-P PORT', '--port PORT', 'assumes 22') do |p|
           options[:port] = p
         end
-        parser.on('-e ENGINE', '--engine ENGINE', 'provision engine' ) do |e|
-          options[:engine] = e
-        end
         parser.on('-i IMAGE', '--image IMAGE', 'corresponds to a image in Caterfile') do |i|
           options[:image] = i
         end
@@ -70,8 +67,8 @@ module Caterer
 
       def init_server(group=nil, member=nil, options={})
 
-        group ||= Config::Group.new
-        member ||= Config::Member.new
+        group   ||= Config::Group.new
+        member  ||= Config::Member.new
 
         opts = {}
         opts[:alias]  = member.name
@@ -82,10 +79,7 @@ module Caterer
         opts[:images] = image_list(options) || member.images || group.images
         opts[:key]    = options[:key] || member.key || group.key
 
-        if engine = options[:engine]
-          opts[:engine] = engine.to_sym
-        end
-
+        # todo: move this in to the provisioner controller
         opts[:data] = begin
 
           data = group.data.merge(member.data)

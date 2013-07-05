@@ -7,19 +7,25 @@ module Caterer
           def call(env)
 
             if env[:image]
-              provisioner = env[:config].images[env[:image]].provisioner
 
-              if not provisioner
-                env[:ui].error "provisioner for image ':#{env[:image]}' is not defined"
+              provisioners = env[:config].images[env[:image]].provisioners
+
+              if provisioners.empty?
+                env[:ui].error "image ':#{env[:image]}' does not have a provisioner"
                 return
               end
-              
-              if errors = provisioner.errors
-                errors.each do |key, val|
-                  env[:ui].error "image :#{env[:image]} provisioner error -> #{key} #{val}"
-                end
-                return
-              end                        
+
+              provisioners.each do |provisioner|
+
+                if errors = provisioner.errors
+                  errors.each do |key, val|
+                    env[:ui].error "image :#{env[:image]} provisioner error -> #{key} #{val}"
+                  end
+                  return
+                end 
+
+              end
+
             end          
 
             @app.call(env)

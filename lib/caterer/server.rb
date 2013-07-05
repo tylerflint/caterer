@@ -18,7 +18,6 @@ module Caterer
       @key    = opts[:key]
       @images = opts[:images] || []
       @data   = opts[:data] || {}
-      @engine = opts[:engine]
 
       @logger = Log4r::Logger.new("caterer::server")
 
