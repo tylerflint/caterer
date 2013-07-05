@@ -34,27 +34,6 @@ module Caterer
         @run_list << "role[#{role}]"
       end
 
-      # I don't like this at all, but it seems to make the best Caterfile workflow
-      def add_image(image)
-        image = config.images[image]
-        raise "Unknown image :#{image}" if not image
-
-        provisioner = image.provisioner
-        raise "No provisioner for :#{image}" if not provisioner
-
-        if not provisioner.class == self.class
-          raise "add_image incompatibility: #{provisioner.class} != #{self.class}"
-        end
-
-        @run_list += provisioner.run_list
-        @bootstrap_scripts += provisioner.bootstrap_scripts
-        @json = @json.merge(provisioner.json)
-      end
-
-      def add_bootstrap(script)
-        @bootstrap_scripts << script
-      end
-
       def errors
         errors = {}
 
