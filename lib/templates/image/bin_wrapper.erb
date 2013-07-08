@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-echo "Provisioning image <%= @name %>..."
+echo "Provisioning <%= @name %>..."
 
 <% @provisioners.each do |p| -%>
 <%= p.provision_cmd %>
