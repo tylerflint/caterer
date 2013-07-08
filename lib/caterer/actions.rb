@@ -46,6 +46,8 @@ Caterer.actions.register(:clean) do
     use Caterer::Action::Environment::Setup
     use Caterer.actions.get(:validate)
     use Caterer::Action::Server::Platform
-    use Caterer::Action::Provisioner::Uninstall
+    use Caterer::Action::Provisioner::Cleanup
+    use Caterer::Action::Image::Cleanup
+    use Caterer::Action::Server::Cleanup
   end
 end
