@@ -31,18 +31,13 @@ Caterer.actions.register(:provision) do
     use Caterer::Action::Server::Platform
     use Caterer::Action::Server::Lock
     use Caterer::Action::Server::Prepare
-    use Caterer::Action::Provisioner::Run
+    use Caterer::Action::Image::Prepare
+    use Caterer::Action::Provisioner::Prepare
+    use Caterer::Action::Image::Run
+    use Caterer::Action::Provisioner::Cleanup
+    use Caterer::Action::Image::Cleanup
     use Caterer::Action::Server::Cleanup
     use Caterer::Action::Server::Unlock
-  end
-end
-
-Caterer.actions.register(:reboot) do
-  Vli::Action::Builder.new do
-    use Caterer::Action::Environment::Setup
-    use Caterer::Action::Server::Validate::SSH
-    use Caterer::Action::Server::Platform
-    use Caterer::Action::Server::Reboot
   end
 end
 

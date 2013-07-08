@@ -11,9 +11,6 @@ module Caterer
         add_server_opts(parser, options)
 
         # add provision specific options
-        parser.on('-d JSON', '--data JSON', 'json data that the provisioner may use' ) do |d|
-          options[:data] = d
-        end
         parser.on('--ghost', 'provision in ghost-mode (leave no trace)') do
           options[:ghost] = true
         end

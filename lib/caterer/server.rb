@@ -17,7 +17,6 @@ module Caterer
       @port   = opts[:port]
       @key    = opts[:key]
       @images = opts[:images] || []
-      @data   = opts[:data] || {}
 
       @logger = Log4r::Logger.new("caterer::server")
 
@@ -35,10 +34,6 @@ module Caterer
       end
     end
 
-    def reboot(opts={})
-      run_action(:reboot, opts)
-    end
-
     def lock(opts={})
       ui.info "*** Locking ***"
       run_action(:lock, opts)
@@ -52,11 +47,6 @@ module Caterer
     def clean(opts={})
       ui.info "*** Cleaning ***"
       run_action(:clean, opts)
-    end
-
-    def reboot!
-      ui.info "Rebooting..."
-      ssh.sudo "shutdown -r now", :stream => true
     end
 
     def lock!
@@ -149,12 +139,6 @@ module Caterer
       @keys ||= [].tap {|keys| keys << key if key }
     end
 
-    def data
-      @data_hash ||= begin
-        (@data.is_a? Hash) ? @data : {}
-      end
-    end
-
     def run_action(name, options=nil)
       options = {
         :server => self,
@@ -210,12 +194,6 @@ module Caterer
 
     def lock_path
       "/tmp/cater.lock"
-    end
-
-    def with_bootstrap_scripts
-      bootstrap_scripts.each_with_index do |script, index|
-        yield script, index if block_given?
-      end
     end
 
   end

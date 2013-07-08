@@ -10,18 +10,17 @@ module Caterer
       
       include Util::Shell
 
-      attr_reader   :name, :run_list, :dest_dir
+      attr_reader   :run_list
       attr_accessor :json, :cookbooks_path, :roles_path
       attr_accessor :data_bags_path
 
-      def initialize(name)
-        @name              = name
-        @dest_dir          = config.dest_dir
-        @run_list          = provisioner_config.run_list.dup
-        @json              = provisioner_config.json.dup
-        @cookbooks_path    = provisioner_config.cookbooks_path.dup
-        @roles_path        = provisioner_config.roles_path.dup
-        @data_bags_path    = provisioner_config.data_bags_path.dup
+      def initialize(image, opts={})
+        @image          = image
+        @run_list       = provisioner_config.run_list.dup
+        @json           = provisioner_config.json.dup
+        @cookbooks_path = provisioner_config.cookbooks_path.dup
+        @roles_path     = provisioner_config.roles_path.dup
+        @data_bags_path = provisioner_config.data_bags_path.dup
       end
 
       # config DSL
@@ -72,7 +71,7 @@ module Caterer
 
         res = server.ssh.sudo bash(File.read(installer)), :stream => true
 
-        # somewhere mark that we installed chef-solo for later uninstall
+        # somewhere mark (on the server) that we installed chef-solo for later uninstall
 
         unless res == 0
           server.ui.error "install failed with exit code: #{res}"
@@ -85,9 +84,17 @@ module Caterer
       end
 
       def prepare(server)
-        # create base dir
+        # create lib dir
         server.ssh.sudo "mkdir -p #{dest_lib_dir}", :stream => true
         server.ssh.sudo "chown -R #{server.username} #{dest_lib_dir}", :stream => true
+
+        # create var dir
+        server.ssh.sudo "mkdir -p #{dest_var_dir}", :stream => true
+        server.ssh.sudo "chown -R #{server.username} #{dest_var_dir}", :stream => true
+
+        # create cache dir
+        server.ssh.sudo "mkdir -p #{dest_cache_dir}", :stream => true
+        server.ssh.sudo "chown -R #{server.username} #{dest_cache_dir}", :stream => true
 
         # create cookbooks directory
         server.ssh.sudo "mkdir -p #{target_cookbooks_path}", :stream => true
@@ -125,46 +132,17 @@ module Caterer
 
         # create json
         server.ui.info "Generating json config..."
-        server.ssh.upload(StringIO.new(json_config(config_data.merge(server.data))), target_json_config_path)
-
-        # create bin wrapper
-        server.ui.info "Generating bin wrapper..."
-        server.ssh.upload(StringIO.new(bin_wrapper_content), target_bin_wrapper_path)
-        server.ssh.sudo "chmod +x #{target_bin_wrapper_path}", :stream => true
+        server.ssh.upload(StringIO.new(json_config(config_data)), target_json_config_path)
 
         # set permissions on everything
         server.ssh.sudo "chown -R #{server.username} #{dest_lib_dir}", :stream => true
-        server.ssh.sudo "chown -R #{server.username} #{dest_bin_dir}", :stream => true
+        server.ssh.sudo "chown -R #{server.username} #{dest_var_dir}", :stream => true
 
       end
 
-      def provision(server)
-        # run
-        server.ui.info "Running chef-solo..."
-        res = server.ssh.sudo target_bin_wrapper_path, :stream => true
-        unless res == 0
-          server.ui.error "chef-solo failed with exit code: #{res}"
-        end
+      def provision_cmd
+        "chef-solo -c #{target_solo_path} -j #{target_json_config_path}"
       end
-
-      # this may not be necessary...
-      # def cleanup(server)
-      #   server.ui.info "Cleaning up..."
-
-      #   # installer
-      #   server.ssh.sudo "rm -f #{target_install_path}", :stream => true
-
-      #   # bootstrap scripts
-      #   server.ssh.sudo "rm -f #{target_bootstrap_path}*", :stream => true
-
-      #   # solo.rb
-      #   server.ssh.sudo "rm -f #{target_solo_path}", :stream => true
-
-      #   # json
-      #   server.ssh.sudo "rm -f #{target_json_config_path}", :stream => true
-
-      #   # for now, leave cookbooks, roles, and data bags for faster provisioning
-      # end
 
       def uninstall(server)
         server.ui.info "Uninstalling..."
@@ -183,11 +161,15 @@ module Caterer
       end
 
       def dest_lib_dir
-        "#{dest_dir}/lib/#{name}"
+        "#{image.lib_dir}/chef-solo"
       end
 
-      def dest_bin_dir
-        "#{dest_dir}/bin"
+      def dest_var_dir
+        "#{image.var_dir}/chef-solo"
+      end
+
+      def dest_cache_dir
+        "#{dest_var_dir}/cache"
       end
 
       def target_install_path
@@ -218,20 +200,12 @@ module Caterer
         "#{dest_lib_dir}/config.json"
       end
 
-      def target_bin_wrapper_path
-        "#{dest_bin_dir}/cater-#{name}"
-      end
-
       def install_script(platform)
         File.expand_path("../../../templates/provisioner/chef_solo/install/#{platform}.sh", __FILE__)
       end
 
       def solo_content(server)
         Tilt.new(File.expand_path('../../../templates/provisioner/chef_solo/solo.erb', __FILE__)).render(self, {:server => server})
-      end
-
-      def bin_wrapper_content
-        Tilt.new(File.expand_path('../../../templates/provisioner/chef_solo/bin_wrapper.erb', __FILE__)).render(self)
       end
 
       def json_config(data)

@@ -1,7 +1,7 @@
 module Caterer
   module Action
     module Provisioner
-      class Run < Base
+      class Prepare < Base
 
         def call(env)
 
@@ -10,8 +10,7 @@ module Caterer
           image  = config.images[env[:image]]
 
           image.provisioners.each do |provisioner|
-
-            %w(install prepare run cleanup uninstall).each do |action|
+            %w( install prepare ).each do |action|
               send action.to_sym, server, provisioner
             end
           end
@@ -25,18 +24,6 @@ module Caterer
 
         def prepare(server, provisioner)
           provisioner.prepare server
-        end
-
-        def run(server, provisioner)
-          provisioner.provision(server) if not @env[:dry_run]
-        end
-
-        def cleanup(server, provisioner)
-          provisioner.cleanup(server)
-        end
-
-        def uninstall(server, provisioner)
-          provisioner.uninstall(server) if @env[:ghost_mode]
         end
 
       end
