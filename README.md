@@ -60,6 +60,7 @@ A few cli usage examples: [cli examples](https://github.com/tylerflint/caterer/w
 * [groups](https://github.com/tylerflint/caterer/wiki/Config:-Groups)
 
 #### Provisioners 
+* [shell](https://github.com/tylerflint/caterer/wiki/Config:-Provisioners:-Shell)
 * [chef-solo](https://github.com/tylerflint/caterer/wiki/Config:-Provisioners:-chef-solo)
 
 ### How To...
