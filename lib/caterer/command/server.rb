@@ -67,8 +67,8 @@ module Caterer
 
       def init_server(group=nil, member=nil, options={})
 
-        group   ||= Config::Group.new
-        member  ||= Config::Member.new
+        group   ||= Caterer::Group.new
+        member  ||= Caterer::Member.new
 
         opts = {}
         opts[:alias]  = member.name
