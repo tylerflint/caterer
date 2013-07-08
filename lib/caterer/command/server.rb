@@ -79,6 +79,19 @@ module Caterer
         opts[:images] = image_list(options) || member.images || group.images
         opts[:key]    = options[:key] || member.key || group.key
 
+        opts[:data] = begin
+
+          data = group.data.merge(member.data)
+
+          if options[:data]
+            # todo: rather than puking if the json is valid, this should create a pretty language
+            json = MultiJson.load options[:data], :symbolize_keys => true
+            data = data.merge(json) if json and json.is_a? Hash
+          end
+
+          data
+        end
+
         Caterer::Server.new(@env, opts)
       end
 

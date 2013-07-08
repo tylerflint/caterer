@@ -17,6 +17,7 @@ module Caterer
       @port   = opts[:port]
       @key    = opts[:key]
       @images = opts[:images] || []
+      @data   = opts[:data] || {}
 
       @logger = Log4r::Logger.new("caterer::server")
 
@@ -137,6 +138,12 @@ module Caterer
 
     def keys
       @keys ||= [].tap {|keys| keys << key if key }
+    end
+
+    def data
+      @data_hash ||= begin
+        (@data.is_a? Hash) ? @data : {}
+      end
     end
 
     def run_action(name, options=nil)

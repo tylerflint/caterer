@@ -132,7 +132,7 @@ module Caterer
 
         # create json
         server.ui.info "Generating json config..."
-        server.ssh.upload(StringIO.new(json_config(config_data)), target_json_config_path)
+        server.ssh.upload(StringIO.new(json_config(config_data.merge(server.data))), target_json_config_path)
 
         # set permissions on everything
         server.ssh.sudo "chown -R #{server.username} #{dest_lib_dir}", :stream => true
