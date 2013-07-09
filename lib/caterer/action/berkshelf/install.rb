@@ -23,9 +23,11 @@ module Caterer
           config = env[:config]
           image  = config.images[env[:image]]
 
-          image.provisioners.each do |provisioner|
-            if provisioner.is_a? Caterer::Provisioner::ChefSolo
-              configure_cookbooks_path(provisioner)
+          if image
+            image.provisioners.each do |provisioner|
+              if provisioner.is_a? Caterer::Provisioner::ChefSolo
+                configure_cookbooks_path(provisioner)
+              end
             end
           end
 
