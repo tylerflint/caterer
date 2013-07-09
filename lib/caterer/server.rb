@@ -50,6 +50,7 @@ module Caterer
         @images.each do |i|
           ui.info "*** Cleaning image: #{i} ***"
           run_action(:clean, opts.merge({:image => i}))
+        end
       else
         ui.info "*** Cleaning ***"
         run_action(:clean, opts)
