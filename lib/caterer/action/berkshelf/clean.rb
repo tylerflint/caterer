@@ -12,9 +12,14 @@ module Caterer
 
         def call(env)
 
-          if env[:provisioner].is_a? Caterer::Provisioner::ChefSolo or env[:force_berks_clean]
-            ::Berkshelf.formatter.msg "cleaning Caterer's shelf"
-            FileUtils.remove_dir(shelf, fore: true)
+          config = env[:config]
+          image  = config.images[env[:image]]
+
+          image.provisioners.each do |provisioner|
+            if provisioner.is_a? Caterer::Provisioner::ChefSolo or env[:force_berks_clean]
+              ::Berkshelf.formatter.msg "cleaning Caterer's shelf"
+              FileUtils.remove_dir(shelf, fore: true)
+            end
           end
 
           @app.call(env)

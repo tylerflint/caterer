@@ -20,8 +20,13 @@ module Caterer
 
         def call(env)
 
-          if env[:provisioner].is_a? Caterer::Provisioner::ChefSolo
-            configure_cookbooks_path(env[:provisioner])
+          config = env[:config]
+          image  = config.images[env[:image]]
+
+          image.provisioners.each do |provisioner|
+            if provisioner.is_a? Caterer::Provisioner::ChefSolo
+              configure_cookbooks_path(provisioner)
+            end
           end
 
           if needs_update? or env[:force_berks_install]
