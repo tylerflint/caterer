@@ -49,11 +49,11 @@ module Caterer
       if @images.length > 0
         @images.each do |i|
           ui.info "*** Cleaning image: #{i} ***"
-          run_action(:clean, opts.merge({:image => i}))
+          run_action(:clean, opts.merge({:image => i, :ghost_mode => true}))
         end
       else
         ui.info "*** Cleaning ***"
-        run_action(:clean, opts)
+        run_action(:clean, opts.merge({:ghost_mode => true}))
       end
     end
 
