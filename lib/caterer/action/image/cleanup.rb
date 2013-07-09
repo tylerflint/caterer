@@ -9,7 +9,9 @@ module Caterer
           server = env[:server]
           image  = config.images[env[:image]]
 
-          image.cleanup(server) if env[:ghost_mode]
+          if image
+            image.cleanup(server) if env[:ghost_mode]
+          end
 
           @app.call(env)
         end
