@@ -32,7 +32,7 @@ module Caterer
       Caterer.config_keys.register(:berkshelf) { Config::Berkshelf }
 
       [ :provision, :up ].each do |action|
-        Caterer.actions[action].insert_before(Caterer::Action::Provisioner::Prepare, install)
+        Caterer.actions[action].insert(Caterer::Action::Provisioner::Prepare, install)
       end
 
       Caterer.actions[:clean].use clean
