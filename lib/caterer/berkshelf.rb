@@ -31,9 +31,7 @@ module Caterer
 
       Caterer.config_keys.register(:berkshelf) { Config::Berkshelf }
 
-      [ :provision, :up ].each do |action|
-        Caterer.actions[action].insert(Caterer::Action::Provisioner::Prepare, install)
-      end
+      Caterer.actions[:provision].insert(Caterer::Action::Provisioner::Prepare, install)
 
       Caterer.actions[:clean].use clean
 
