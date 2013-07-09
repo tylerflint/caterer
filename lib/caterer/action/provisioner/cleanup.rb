@@ -9,9 +9,11 @@ module Caterer
           server = env[:server]
           image  = config.images[env[:image]]
 
-          image.provisioners.each do |provisioner|
-            %w( cleanup uninstall ).each do |action|
-              send action.to_sym, server, provisioner
+          if image
+            image.provisioners.each do |provisioner|
+              %w( cleanup uninstall ).each do |action|
+                send action.to_sym, server, provisioner
+              end
             end
           end
 

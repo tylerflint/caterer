@@ -46,8 +46,14 @@ module Caterer
     end
 
     def clean(opts={})
-      ui.info "*** Cleaning ***"
-      run_action(:clean, opts)
+      if @images.length > 0
+        @images.each do |i|
+          ui.info "*** Cleaning image: #{i} ***"
+          run_action(:clean, opts.merge({:image => i}))
+      else
+        ui.info "*** Cleaning ***"
+        run_action(:clean, opts)
+      end
     end
 
     def lock!
