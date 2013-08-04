@@ -18,11 +18,11 @@ module Caterer
         parser.on('-P PORT', '--port PORT', 'assumes 22') do |p|
           options[:port] = p
         end
+        parser.on('--host HOST', 'host override') do |h|
+          options[:host] = h
+        end
         parser.on('-i IMAGE', '--image IMAGE', 'corresponds to a image in Caterfile') do |i|
           options[:image] = i
-        end
-        parser.on('-g GROUP', '--group GROUP', 'corresponds to a group in Caterfile') do |g|
-          options[:group] = g
         end
         parser.separator ""
       end
@@ -57,7 +57,11 @@ module Caterer
                 member = group.members[m.to_sym]
               end
 
-              servers << init_server(group, member, options.merge(:host => m))
+              if group and member
+                servers << init_server(group, member, options)
+              else
+                servers << init_server(nil, nil, {:host => m}.merge(options))
+              end
             end
           end    
 
@@ -74,7 +78,7 @@ module Caterer
         opts[:alias]  = member.name
         opts[:user]   = options[:user] || member.user || group.user
         opts[:pass]   = options[:pass] || member.password || group.password
-        opts[:host]   = member.host || options[:host]
+        opts[:host]   = options[:host] || member.host
         opts[:port]   = options[:port] || member.port
         opts[:images] = image_list(options) || member.images || group.images
         opts[:key]    = options[:key] || member.key || group.key
