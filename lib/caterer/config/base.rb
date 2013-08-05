@@ -3,7 +3,7 @@ module Caterer
     class Base
 
       attr_reader :images, :groups
-      attr_accessor :dest_dir
+      attr_accessor :dest_dir, :default_command
 
       def initialize
         @images   = {}

@@ -9,5 +9,10 @@ module Caterer
       @data = {}
     end
 
+    def add_image(image)
+      @images ||= []
+      @images << image
+    end
+
   end
 end

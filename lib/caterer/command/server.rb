@@ -80,7 +80,7 @@ module Caterer
         opts[:pass]   = options[:pass] || member.password || group.password
         opts[:host]   = options[:host] || member.host
         opts[:port]   = options[:port] || member.port
-        opts[:images] = image_list(options) || member.images || group.images
+        opts[:images] = image_list(options) || member.images || group.images || [:default]
         opts[:key]    = options[:key] || member.key || group.key
 
         opts[:data] = begin

@@ -6,12 +6,12 @@ module Caterer
 
     def initialize(name=nil)
       @name    = name
-      @images  = []
       @members = {}
       @data    = {}
     end
 
     def add_image(image)
+      @images ||= []
       @images << image
     end
 

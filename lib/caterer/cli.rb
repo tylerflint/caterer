@@ -29,11 +29,20 @@ module Caterer
         return 0
       end
 
-      command_class = Caterer.commands.get(@sub_command.to_sym) if @sub_command
-      if !command_class || !@sub_command
+      if !@sub_command
         help
         return 0
+      end      
+
+      begin
+        command_class = Caterer.commands.get(@sub_command.to_sym) || raise
+      rescue
+        # didn't understand the sub-command, let's run our default
+        @sub_args.unshift @sub_command
+        @sub_command = @env.config.default_command
+        retry
       end
+
       @logger.debug("Invoking command class: #{command_class} #{@sub_args.inspect}")
 
       # Initialize and execute the command class, returning the exit status.
