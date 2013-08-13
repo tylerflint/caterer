@@ -71,7 +71,8 @@ module Caterer
 
         res = server.ssh.sudo bash(File.read(installer)), :stream => true
 
-        # somewhere mark (on the server) that we installed chef-solo for later uninstall
+        # mark (on the server) that we installed chef-solo for later uninstall
+        server.ssh.sudo "touch #{dest_var_dir}/INSTALL"
 
         unless res == 0
           server.ui.error "install failed with exit code: #{res}"
@@ -81,6 +82,29 @@ module Caterer
       def installed?(server)
         res = server.ssh.sudo "command -v chef-solo &>/dev/null"
         res == 0 ? true : false
+      end
+
+      def uninstall(server)
+        server.ui.info "Uninstalling..."
+
+        # figure out how to uninstall chef_solo IF we installed it
+        installed = server.ssh.sudo "[[ -f #{dest_var_dir}/INSTALL ]]"
+
+        if installed == 0
+          uninstaller = uninstall_script(server.platform)
+
+          if not File.exists? uninstaller
+            server.ui.error "#{server.platform} doesn't have an uninstall script"
+            return
+          end
+
+          res = server.ssh.sudo bash(File.read(uninstaller)), :stream => true
+
+          unless res == 0
+            server.ui.error "install failed with exit code: #{res}"
+          end
+        end
+
       end
 
       def prepare(server)
@@ -144,12 +168,6 @@ module Caterer
         "chef-solo -c #{target_solo_path} -j #{target_json_config_path}"
       end
 
-      def uninstall(server)
-        server.ui.info "Uninstalling..."
-
-        # figure out how to uninstall chef_solo IF we installed it
-      end
-
       protected
 
       def config
@@ -202,6 +220,10 @@ module Caterer
 
       def install_script(platform)
         File.expand_path("../../../templates/provisioner/chef_solo/install/#{platform}.sh", __FILE__)
+      end
+
+      def uninstall_script(platform)
+        File.expand_path("../../../templates/provisioner/chef_solo/uninstall/#{platform}.sh", __FILE__)
       end
 
       def solo_content(server)
