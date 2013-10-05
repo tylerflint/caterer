@@ -1,12 +1,13 @@
+require 'caterer/action/server/cleanup'
+require 'caterer/action/server/lock'
+require 'caterer/action/server/platform'
+require 'caterer/action/server/prepare'
+require 'caterer/action/server/validate'
+require 'caterer/action/server/unlock'
+
 module Caterer
   module Action
     module Server
-      autoload :Cleanup,  'caterer/action/server/cleanup'
-      autoload :Lock,     'caterer/action/server/lock'
-      autoload :Platform, 'caterer/action/server/platform'
-      autoload :Prepare,  'caterer/action/server/prepare'
-      autoload :Validate, 'caterer/action/server/validate'
-      autoload :Unlock,   'caterer/action/server/unlock'
     end
   end
 end

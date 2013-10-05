@@ -1,12 +1,12 @@
+require 'caterer/action/base'
+require 'caterer/action/berkshelf'
+require 'caterer/action/config'
+require 'caterer/action/environment'
+require 'caterer/action/image'
+require 'caterer/action/provisioner'
+require 'caterer/action/server'
+
 module Caterer
   module Action
-    autoload :Base,         'caterer/action/base'
-    autoload :Berkshelf,    'caterer/action/berkshelf'
-    autoload :Config,       'caterer/action/config'
-    autoload :Environment,  'caterer/action/environment'
-    autoload :Image,        'caterer/action/image'
-    autoload :Runner,       'caterer/action/runner'
-    autoload :Provisioner,  'caterer/action/provisioner'
-    autoload :Server,       'caterer/action/server'
   end
 end
