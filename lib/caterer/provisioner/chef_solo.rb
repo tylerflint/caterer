@@ -9,6 +9,7 @@ module Caterer
     class ChefSolo < Base
       
       include Util::Shell
+      include Util::Hash
 
       attr_reader   :run_list
       attr_accessor :json, :cookbooks_path, :roles_path
@@ -156,7 +157,7 @@ module Caterer
 
         # create json
         server.ui.info "Generating json config..."
-        server.ssh.upload(StringIO.new(json_config(config_data.merge(server.data))), target_json_config_path)
+        server.ssh.upload(StringIO.new(json_config(deep_merge(config_data, server.data))), target_json_config_path)
 
         # set permissions on everything
         server.ssh.sudo "chown -R #{server.username} #{dest_lib_dir}", :stream => true
